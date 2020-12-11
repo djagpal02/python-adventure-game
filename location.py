@@ -1,6 +1,7 @@
 from Map import all_maps # for change map algorithm
 from shops import all_shops # To find correct shop in shop algorithm
 from bed import all_beds # To find correct bed in bed algrorithm
+from gui import printer as p 
 
 class location:
     """
@@ -87,9 +88,9 @@ class location:
         """
         for shop in all_shops: # To determine which items to display search for shop in all shops
             if shop.key == placeholder: # Once found, print list of available items
-                print(f"Welcome,  we have: ")
+                p(f"Welcome,  we have: ")
                 for i in shop.available_items:
-                    print(f"{i.name} for {i.value} gold")
+                    p(f"{i.name} for {i.value} gold")
                 x = input("Would you like to purchase anything? if no type exit otherwise select an item") # Ask user for purchase
                 if x == "exit": # if user changes mind
                     break
@@ -118,4 +119,4 @@ class location:
                 elif x.lower() == "no": # If user chooses no, allow user back to map
                     pass
                 else:
-                    print("Invalid input") # Any other inputs are met with this error message
+                    p("Invalid input") # Any other inputs are met with this error message

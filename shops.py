@@ -2,6 +2,7 @@
 from items import (basic_sword ,warrior_sword, royal_blade, frozen_fire_blade, dragon_slayer, basic_shield, royal_shield,
                    dragon_warrior_shield, warrior_chainmail, royal_chainmail, frozen_fire_chainmail, dragonscale_armour,
                    hp_pot, magic_pot, ultimate_pot )
+from gui import printer as p
 
 class shop:
     """
@@ -46,9 +47,11 @@ class shop:
         """
         Prints list of available items and price to console
         """
-        print("At this shop we have: ")
+        p("At this shop we have: ")
+        stri = ""
         for item in self.available_items:
-            print(f"{item.name} for {item.value} gold")
+            stri += f"{item.name} for {item.value} gold"
+        p(stri)
 
 
 
@@ -77,11 +80,11 @@ class shop:
                     if item_added == True:
                         player.gold -= temp.value
                 except:
-                    print("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
+                    p("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
             else:
-                print("insufficient gold")
+                p("insufficient gold")
         else:
-            print("Invalid input, please try again")
+            p("Invalid input, please try again")
 
 
 

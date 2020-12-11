@@ -40,7 +40,7 @@ class enemy(character):
         self.gold = int(self.level*50*(0.75 + 0.5*random()))
         self.items = items
         self.level = level
-        self.EXP_given = int(self.level*50 +150)
+        self.EXP_given = int(self.level*200 +150)
 
 
 ################################################  Enemies ##############################################################################################
@@ -403,8 +403,8 @@ class e3(enemy):
 
 
 class boss(enemy):
-    def __init__(self,name, level, items = {}):
-        super().__init__(name, level, items)
+    def __init__(self,level, name, items = {}):
+        super().__init__(level, name, items)
         """
         Constructor Method
         ...
@@ -417,3 +417,4 @@ class boss(enemy):
         self.items = {}
 
 enemies = {11:a1,12:a2, 13:a3, 14:b1, 15:b2, 16:b3, 17:c1, 18:c2, 19:c3, 20:d1, 21:d2, 22:d3, 23:e1, 24:e2, 25:e3}
+

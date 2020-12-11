@@ -1,11 +1,12 @@
 from character import character # Inheritence
-from items import pot, weapon, shield, armour ,all_items # To check bag for duplicate items
+from items import pot, weapon, shield, armour ,all_items, boat # To check bag for duplicate items
 from fight import fight # To enage in battle
 from enemy import enemies, a1, a2, a3, b1, b2, b3, c1, c2, c3, d1, d2, d3, e1, e2, e3,boss # For random battles accross map
 from random import random
 from location import location # To set initial location
 from Map import home # To set intitial location
-
+from story_character import all_story_characters, Mom
+from gui import printer as p
 
 
 
@@ -66,7 +67,7 @@ class player(character):
         moves user location down or interacts with something in the down position
 
     """
-    def __init__(self,current_location = location(home,1,1),last_save_location = location(home,1,1),level = 1, name = "No Name", EXP = 0,exp_needed=500, gold = 0, items = {}):
+    def __init__(self,current_location = location(home,1,1),last_save_location = location(home,1,1),level = 1, name = "No Name", EXP = 0,exp_needed=500, gold = 0, items = {}, story_tracker = 1):
         """
         Constructor
         ...
@@ -98,7 +99,31 @@ class player(character):
         self.HP = 500 + self.level*200 # HP increases 200 per level
         self.max_HP = 500 + self.level*200
         self.AD = self.level*50  # AD increases 50 per level
-    
+        self.story_tracker = story_tracker #Tracks story and allows for starting game at various points in story
+
+
+    ######################################################### STORY INTERACTIONS ###############################################################
+    def interact(self,placeholder):
+        for character in all_story_characters:
+            if placeholder == character.key:
+                p(f"{character.name}:")
+                character.interact(self)
+
+    ######################################################## LEVEL BASED MAP LIMITER ############################################################
+    def limiter(self,placeholder):
+        x = self.story_tracker
+
+        if x < 4 and placeholder in ['2TOWN','TOWER','3TOWN','4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        elif x < 7 and placeholder in ['3TOWN','4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        elif x < 8 and placeholder in ['4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        else:
+            self.current_location.changemap(placeholder)
+
+
+
 
 
     #########################################################  SHOW STATS  ##################################################################################
@@ -106,10 +131,10 @@ class player(character):
         """
         Prints user stats to the console along with contents of user bag
         """
-        print(f"""\nName : {self.name} \nLevel: {self.level} \nAD: {self.AD} \nHP: {self.HP} \nMAX HP: {self.max_HP} \nEXP for level up: {self.exp_needed} \nGold: {self.gold}
+        p(f"""\nName : {self.name} \nLevel: {self.level} \nAD: {self.AD} \nHP: {self.HP} \nMAX HP: {self.max_HP} \nEXP: {self.EXP} \nEXP for level up: {self.exp_needed} \nGold: {self.gold}
         \n...\n\nIn your bag:\n""") #prints(user stats)
         for item in self.items.keys(): # Prints items and quantities
-            print(f"{item.name} x {self.items[item]}")
+            p(f"{item.name} x {self.items[item]}")
 
 
 
@@ -125,7 +150,7 @@ class player(character):
             things.append(i.key)
             amount.append(j)
         with open(x, 'w') as f: # Opens file x and writes or overwrites data
-            f.write(f"{self.name}\n{self.level}\n{self.gold}\n{things}\n{amount}\n{self.current_location.map.key}\n{self.current_location.row}\n{self.current_location.col}\n{self.EXP}\n{self.exp_needed}")
+            f.write(f"{self.name}\n{self.level}\n{self.gold}\n{things}\n{amount}\n{self.current_location.map.key}\n{self.current_location.row}\n{self.current_location.col}\n{self.EXP}\n{self.exp_needed}\n{self.story_tracker}")
         self.last_save_location = location(self.current_location.map, self.current_location.row, self.current_location.col) # Changes last save location
 
 
@@ -137,6 +162,7 @@ class player(character):
         """
         self.current_location = location(self.last_save_location.map, self.last_save_location.row, self.last_save_location.col) # Reset location
         self.HP = self.max_HP # Reset HP
+        self.gold = int(self.gold*0.9)  # Lose 10% gold each time you die
 
     
 
@@ -154,8 +180,8 @@ class player(character):
         self.EXP += opponent.EXP_given # Add EXP
         if self.EXP > self.exp_needed: # If EXP meets requirements LEVEL UP
             self.level += 1
-            self.exp_needed = int(self.exp_needed + self.exp_needed*1.1)
-            print(f"{self.name} just leveled up to Level {self.level}!!")
+            self.exp_needed = int(self.exp_needed + 500*(1.1**self.level))
+            p(f"{self.name} just leveled up to Level {self.level}!!")
     
 
 
@@ -253,17 +279,17 @@ class player(character):
             if x == pot: # if it is a pot then player can have more than 1 otherwise is limited
                 self.items[item] += 1
                 item_added = True
-                print(f"You now have another {item.name}")
+                p(f"You now have another {item.name}")
             elif x == weapon or x == shield or x == armour:
-                print("You already have one")
+                p("You already have one")
         else: # If it is not already in bag
             if x == pot: # New pot 
                 self.items[item] = 1
                 item_added = True
-                print(f"{item.name} has been added to your inventory")
+                p(f"{item.name} has been added to your inventory")
             else:
                 if x in contents: # if it is not a pot then matching types cannot be bough until an old one is gotten rid off
-                    print(f"Please get rid of your old weapon/shield/armour before purchasing a new one")
+                    p(f"Please get rid of your old weapon/shield/armour before purchasing a new one")
                     removal = input("Would you like to get rid of an item? (yes/no)") # Allow user to delete old item
                     if removal.lower() == "yes":
                         self.show_stats() # Show items for user 
@@ -271,7 +297,7 @@ class player(character):
                         for i in all_items:
                             if i.name.lower() == to_be_removed.lower():
                                 self.remove_item(i)
-                                print("Item was removed") # If it was removed then this message will display
+                                p("Item was removed") # If it was removed then this message will display
                 else:
                     self.items[item] = 1 # If it is not in bag or same type isnt in bag, simply add 1 unit to bag
                     item_added = True
@@ -280,7 +306,7 @@ class player(character):
                     elif type(item) == shield or type(item) == armour:
                         self.HP += item.HP # Scale hp based on items
                         self.max_HP += item.HP
-                    print(f"{item.name} has been added to your inventory")
+                    p(f"{item.name} has been added to your inventory")
         
         return item_added
 
@@ -331,7 +357,7 @@ class player(character):
         :type val: int
         """
         flt = random() # Random number to decide how often a random battle should occur
-        if flt < 0.4:
+        if flt < 0.3:
             if val == 26: # Set regions have varying levels of difficulty in terms of enemies
                 self.world_map_enemies(a1,a2,a3)
             elif val == 27:
@@ -361,12 +387,18 @@ class player(character):
         if val < 31: # for battles and general movement
             self.map_enemies(val)
             self.current_location.col -= 1
-        elif val == 50: # To enter a door to another map
-            self.current_location.changemap(placeholder)
+        elif val == 50: # To enter a door to another map limited by storyline
+            self.limiter(placeholder)
         elif val == 40: # To interact with a shop
             self.current_location.shop(self,placeholder)
         elif val == 90: # To interact with a bed
             self.current_location.bed(self,placeholder)
+        elif val == 80: # To interact with a story character
+            self.interact(placeholder)
+        elif val == 70: # To get across river
+            if boat in self.items:
+                self.current_location.col -= 1
+
            
 
 
@@ -381,11 +413,16 @@ class player(character):
             self.map_enemies(val)
             self.current_location.col += 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
             self.current_location.shop(self,placeholder)
         elif val == 90:
             self.current_location.bed(self,placeholder)
+        elif val == 80:
+            self.interact(placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.col += 1
           
 
 
@@ -399,11 +436,17 @@ class player(character):
             self.map_enemies(val)
             self.current_location.row -= 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
             self.current_location.shop(self,placeholder)
         elif val == 90:
             self.current_location.bed(self,placeholder)
+        elif val == 80:
+            self.interact(placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.row -= 1
+          
           
 
 
@@ -417,9 +460,14 @@ class player(character):
             self.map_enemies(val)
             self.current_location.row += 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
             self.current_location.shop(self,placeholder)
         elif val == 90:
             self.current_location.bed(self,placeholder)
+        elif val == 80:
+            self.interact(placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.row += 1
           

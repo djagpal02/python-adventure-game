@@ -1,3 +1,5 @@
+from gui import printer as p
+
 all_beds = [] # Create list of all beds for later looping
 
 
@@ -52,13 +54,13 @@ class bed:
         :type player: player.character
         """
         if player.gold > self.cost: # Given user has enough gold (incase of hotel)
-            print(f"{self.cost} has been charged for your stay")
+            p(f"{self.cost} has been charged for your stay")
             player.gold -= self.cost # Deducts gold cost
             player.HP = player.max_HP # Resets HP
             player.savegame() # Saves game
-            print("The game has been saved")
+            p("The game has been saved")
         else:
-            print("You have insufficient gold")
+            p("You have insufficient gold")
 
 
 

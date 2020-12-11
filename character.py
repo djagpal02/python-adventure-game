@@ -1,5 +1,5 @@
 from random import random
-
+from gui import printer as p
 
 
 class character:
@@ -62,11 +62,11 @@ class character:
         :type opp: enemy.character
         """
         dmg = int(self.AD*(0.75 + 0.5*random())) # Randomize damage from 75% to up to 125%
-        print(f"{self.name} attacks.......{opp.name} takes {dmg} damage") 
+        p(f"{self.name} attacks.......{opp.name} takes {dmg} damage") 
         opp.HP -= dmg
         if opp.HP < 0: # If health becomes negative, it is set to 0
             opp.HP = 0
-        print(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left")
+        p(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left")
 
 
 

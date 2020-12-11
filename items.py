@@ -248,3 +248,9 @@ dragonscale_armour = armour("dsa","DragonScale Armour", 50000, 3000)
 hp_pot = pot("hpo","Health Potion", 150, 75)
 magic_pot = pot("mpo","Magic Potion", 600, 400)
 ultimate_pot = pot("upo","Ultimate Potion", 3000, 2500)
+
+
+########### Story Items ###############
+
+earls_gold = item("egl","Earl's Gold", 0)
+boat = item("bt-", "Boat",0)

@@ -1,8 +1,11 @@
-from game import new_game, load_game
-from player import player # To create player profile for old returning player
+from player import player
 from location import location # To give position to player on loading old game#
 from Map import all_maps # To find current map when loading old game
-from items import all_items , pot, weapon, shield, armour# To recreate items dictionary from string 
+from items import all_items , pot, weapon, shield, armour# To recreate items dictionary from string
+from game import new_game, load_game
+from textui import Textui
+from gui import myApp,win,printer
+import tkinter as tk
 
 def get_items(x, q):
     """
@@ -48,11 +51,6 @@ def get_items(x, q):
         item_dict[items[i]] = amm[i]
 
     return item_dict
-
-
-
-
-
 def loadgame(name):
     """
     Function that reads old user data from txt file and loads old game
@@ -80,6 +78,7 @@ def loadgame(name):
         cl_col = int(f.readline())
         exp = int(f.readline())
         exp_n = int(f.readline())
+        st = int(f.readline())
     curr_map = None # emptry var to be assigned current map
     for i in all_maps:
         if i.key == cl_map:
@@ -95,64 +94,68 @@ def loadgame(name):
             del bag[i]
     except:
         bag = {}
-    user = player(location(curr_map,cl_row,cl_col),location(curr_map,cl_row,cl_col), level,name,exp,exp_n,gold, bag)
+    user = player(location(curr_map,cl_row,cl_col),location(curr_map,cl_row,cl_col), level,name,exp,exp_n,gold, bag,st)
     for i in non_pot_items:
         user.add_item(i)
 
     return user
 
 
+def startgame(App):
+    x = myApp.username
+    if App.gametype == 0:
+        t_game = new_game(x)
+    elif App.entryIntro == 1:
+        try:
+            user = loadgame(x)
+            t_game = load_game(user)
+        except:
+            print("Unable to find user data, will load a new game...")
+            t_game = new_game(x)
+    return t_game
 
+def inpt():
+    pass
 
-
+def movement(move,textui,this_game,myApp=myApp):
+    if myApp.contin == True:
+        if move == "a":
+            this_game.user.left()
+            textui.show_map(this_game)
+            myApp.show_map2(this_game)
+        elif move == "w":
+            this_game.user.up()
+            textui.show_map(this_game)
+            myApp.show_map2(this_game)        
+        elif move == "s":
+            this_game.user.down()
+            textui.show_map(this_game)
+            myApp.show_map2(this_game)
+        elif move == "d":
+            this_game.user.right()
+            textui.show_map(this_game)
+            myApp.show_map2(this_game)
+        #elif move == "exit":
+        #   game_active = False
+        elif move == "stats":
+            this_game.user.show_stats()
+        else:
+            this_game.menu()
 
 def main():
     """
     Main function, includes intro and user functionality, such as movement
     """
-    print("Welcome to my adventure game")
-    print("Would you like to start a new game or load a previous one? (load/new)")
-    inp = input()
-    print("What is your name?")
-    name = input()
-    if inp == "new":
-        this_game = new_game(name)
-    elif inp == "load":
-        try:
-            user = loadgame(name)
-            user.gold += 10000 ############################################################################## TODO delete this line  ######################
-            this_game = load_game(user)
-        except:
-            print("Unable to find user data, will load a new game...")
-            this_game = new_game(name)
-    else:
-        print("Invalid entry, will load a new game...")
-        this_game = new_game(name)
-        
-    print("To move around use awsd, to bring up stats, type stats and to save game sleep at any bed, at home or in a hotel")
-    print("Enjoy the game!")
+    textui = Textui()
 
-    game_active = True
-    while game_active == True:
-        move = input()
-        if move == "a":
-            this_game.user.left()
-            this_game.show_map()
-        elif move == "w":
-            this_game.user.up()
-            this_game.show_map()
-        elif move == "s":
-            this_game.user.down()
-            this_game.show_map()
-        elif move == "d":
-            this_game.user.right()
-            this_game.show_map()
-        elif move == "exit":
-            game_active = False
-        elif move == "stats":
-            this_game.user.show_stats()
-        else:
-            this_game.menu()
+
+    print(this_game.user.name)
+    win.bind("<w>",lambda x:movement("w",textui,this_game))
+    win.bind("<a>",lambda x:movement("a",textui,this_game))
+    win.bind("<s>",lambda x:movement("s",textui,this_game))
+    win.bind("<d>",lambda x:movement("d",textui,this_game))
+    win.bind("<Return>",lambda x:myApp.contin_switch())
+    win.mainloop()
 
 if __name__ == "__main__":
     main()
