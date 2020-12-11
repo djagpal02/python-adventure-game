@@ -103,16 +103,20 @@ def loadgame(name):
 
 def startgame(App):
     x = myApp.username
-    if App.gametype == 0:
+    print(App.gametype)
+    if App.gametype.get() == 0:
         t_game = new_game(x)
-    elif App.entryIntro == 1:
+    elif App.gametype.get() == 1:
         try:
             user = loadgame(x)
             t_game = load_game(user)
         except:
             print("Unable to find user data, will load a new game...")
             t_game = new_game(x)
+    else:
+        t_game = new_game(x)
     return t_game
+
 
 def inpt():
     pass
@@ -146,16 +150,18 @@ def main():
     """
     Main function, includes intro and user functionality, such as movement
     """
+    myApp.enter.wait_variable(myApp.num)
+    this_game = startgame(myApp)
+
     textui = Textui()
-
-
-    print(this_game.user.name)
     win.bind("<w>",lambda x:movement("w",textui,this_game))
     win.bind("<a>",lambda x:movement("a",textui,this_game))
     win.bind("<s>",lambda x:movement("s",textui,this_game))
     win.bind("<d>",lambda x:movement("d",textui,this_game))
     win.bind("<Return>",lambda x:myApp.contin_switch())
+
     win.mainloop()
+
 
 if __name__ == "__main__":
     main()

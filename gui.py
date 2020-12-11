@@ -25,7 +25,6 @@ class App():
         self.img10 = ImageTk.PhotoImage(Image.open('images/grey.png'))
         self.contin = False
         self.gametype = tk.IntVar()
-        self.gametype = 0
         self.load = tk.Radiobutton(self.frame2, text="Load",padx = 20, variable = self.gametype, value=1)
         self.load.pack(side=tk.LEFT)
         self.new = tk.Radiobutton(self.frame2, text="New", padx = 20,variable = self.gametype, value=0)
@@ -34,10 +33,7 @@ class App():
         self.entryIntro.pack()
         self.enter = tk.Button(self.frame2,text = "enter", command = self.intro)
         self.enter.pack(side=tk.RIGHT)
-        self.ready = False
-        #gamemodes "INTRO", "BATTLE", "MOVE"
-        self.gamemode = "INTRO"
-
+        self.num = tk.IntVar()
 
 
         
@@ -69,8 +65,7 @@ class App():
         self.enter.destroy()
         self.new.destroy()
         self.load.destroy()
-        self.gamemode = "INTRO2"
-        print(self.gamemode)
+        self.num.set(1)
 
         
     def change_image(self,label,img):
