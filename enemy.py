@@ -60,7 +60,7 @@ def enemy_name(level):
         12:"",
         13:"",
         14:"",
-        15:"",
+        15:""
     }
     return names[level]
 

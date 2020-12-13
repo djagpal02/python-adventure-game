@@ -2,7 +2,6 @@
 from items import (basic_sword ,warrior_sword, royal_blade, frozen_fire_blade, dragon_slayer, basic_shield, royal_shield,
                    dragon_warrior_shield, warrior_chainmail, royal_chainmail, frozen_fire_chainmail, dragonscale_armour,
                    hp_pot, magic_pot, ultimate_pot )
-from gui import printer as p
 
 class shop:
     """
@@ -41,40 +40,6 @@ class shop:
         self.key = key
         self.available_items = available_items
 
-
-
-
-
-    def purchase(self,player, x):
-        """
-        Matches user input to an item and attempts user purchase
-
-        Loops through all item key list to match user input to an item and if possible purchases 
-        ...
-
-        Parameters
-        ----------
-        :param player: users character
-        :type player: player.character
-        :param x: user input
-        :type x: str
-        """
-        temp = None # Need to initiate variable outside loop, set to None for convienence
-        for i in self.available_items:
-            if i.name.lower() == x.lower(): # puts all letters into lowercase to avoid captial letter errors
-                temp = i
-        if temp != None: # If temp has been assigned a new value
-            if player.gold > temp.value: # if player has enough gold
-                try:
-                    item_added = player.add_item(temp)
-                    if item_added == True:
-                        player.gold -= temp.value
-                except:
-                    p("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
-            else:
-                p("insufficient gold")
-        else:
-            p("Invalid input, please try again")
 
 
 

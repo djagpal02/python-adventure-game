@@ -15,11 +15,6 @@ class bed:
     :type key: str
     :param cost: cost in gold to sleep at this bed
     :type cost: int
-
-    Methods
-    -------
-    use_bed(player)
-        Given enough gold, allows user to regain Hit points and save game
     """
 
 
@@ -40,28 +35,6 @@ class bed:
         self.cost = cost
 
         all_beds.append(self)
-
-
-
-    def use_bed(self,player):
-        """
-        Given enough gold, allows user to regain Hit points and save game
-        ...
-
-        Parameters
-        ----------
-        :param player: game user
-        :type player: player.character
-        """
-        if player.gold > self.cost: # Given user has enough gold (incase of hotel)
-            p(f"{self.cost} has been charged for your stay")
-            player.gold -= self.cost # Deducts gold cost
-            player.HP = player.max_HP # Resets HP
-            player.savegame() # Saves game
-            p("The game has been saved")
-        else:
-            p("You have insufficient gold")
-
 
 
 

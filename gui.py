@@ -6,11 +6,19 @@ from grid_point import grid_element
 class App():
     def __init__(self, root):
         # Set frames
-        self.frame1 = tk.Frame(root,width=625, height = 625, borderwidth=2 )
+        self.frame1 = tk.Frame(root,highlightbackground="green", highlightcolor="green", highlightthickness=1,width=625, height = 625, borderwidth=2 )
         self.frame1.pack_propagate(0)
-        self.frame2 = tk.Frame(root,width=625, height=625,borderwidth=2)
-        self.frame1.pack(side = tk.LEFT)
-        self.frame2.pack(side= tk.RIGHT)
+        self.frame2 = tk.Frame(root, highlightbackground="red", highlightcolor="red", highlightthickness=1,width=625, height=425,borderwidth=2)
+        self.frame3 = tk.Frame(root, highlightbackground="blue", highlightcolor="blue", highlightthickness=1,width=625, height=200,borderwidth=2)
+        self.frame4 = tk.Frame(root, highlightbackground="black", highlightcolor="black", highlightthickness=1,width=625, height=200,borderwidth=2)
+        self.frame1.pack_propagate(0)
+        self.frame1.pack(side= tk.LEFT)
+        self.frame4.pack_propagate(0)
+        self.frame4.pack(side = tk.TOP)
+        self.frame2.pack_propagate(0)
+        self.frame2.pack()
+        self.frame3.pack_propagate(0)
+        self.frame3.pack(side = tk.BOTTOM)
 
         # Images - 25x25 pixel squares
         self.img1 = ImageTk.PhotoImage(Image.open('images/black.png'))
@@ -80,24 +88,35 @@ class App():
             self.frame1.rowconfigure(i,pad=1)
 
 
-        self.name = tk.Label(self.frame2, text = "")
-        self.name.grid(row=7)
-        self.level = tk.Label(self.frame2,text = "")
-        self.level.grid(row=8)
-        self.ad = tk.Label(self.frame2, text = "")
-        self.ad.grid(row = 9)
-        self.hp = tk.Label(self.frame2, text = "")
-        self.hp.grid(row=10)
-        self.max_HP = tk.Label(self.frame2, text = "")
-        self.max_HP.grid(row=11)
-        self.EXP = tk.Label(self.frame2, text = "")
-        self.EXP.grid(row=12)
-        self.exp_needed = tk.Label(self.frame2,text = "")
-        self.exp_needed.grid(row=13)
-        self.gold = tk.Label(self.frame2, text = "")
-        self.gold.grid(row=14)
-        self.items = tk.Label(self.frame2, text = "")
-        self.items.grid(row=15)
+        self.name = tk.Label(self.frame3, text = "")
+        self.name.grid(row=2, column=0)
+        self.level = tk.Label(self.frame3,text = "")
+        self.level.grid(row=3, column=0)
+        self.ad = tk.Label(self.frame3, text = "")
+        self.ad.grid(row = 4, column=0)
+        self.hp = tk.Label(self.frame3, text = "")
+        self.hp.grid(row=5, column=0)
+        self.max_HP = tk.Label(self.frame3, text = "")
+        self.max_HP.grid(row=6, column=0)
+        self.EXP = tk.Label(self.frame3, text = "")
+        self.EXP.grid(row=7, column=0)
+        self.exp_needed = tk.Label(self.frame3,text = "")
+        self.exp_needed.grid(row=8, column=0)
+        self.gold = tk.Label(self.frame3, text = "")
+        self.gold.grid(row=9, column=0)
+        self.items = tk.Label(self.frame3, text = "")
+        self.items.grid(row=1, column=1)
+
+
+        # User instructions
+        self.instructions = tk.Label(self.frame3, text = "Keys \nW - Up \nS - Down \nA - Left \nD - Right \nReturn - Continue")
+        self.instructions.grid(row=1, column=3)
+
+        # Location Label 
+        self.big_loc = tk.Label(self.frame4, text = "")
+        self.big_loc.grid()
+        self.big_loc.config(width = 50)
+
     #############################################################################################################################################
 
     def intro(self):
@@ -118,7 +137,6 @@ class App():
     def change_image(self,label,img):
         label.configure(image=img)
         label.image = img
-    
     
     def new_msg(self,message):
         self.label1.configure(text=message)
@@ -220,6 +238,8 @@ class App():
         for item in game.user.items.keys():
             strng += f"\n{item.name} x {game.user.items[item]}"
         self.items.configure(text = strng)
+
+        self.big_loc.configure(text = game.user.current_location.map.name)
 
 
 

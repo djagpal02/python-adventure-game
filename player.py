@@ -1,13 +1,14 @@
 from character import character # Inheritence
 from items import pot, weapon, shield, armour ,all_items, boat # To check bag for duplicate items
-from fight import fight # To enage in battle
 from enemy import enemy, enemy_name# For random battles accross map
 from random import random
 from location import location # To set initial location
 from Map import home # To set intitial location
 from story_character import all_story_characters, Mom
 from gui import printer as p
-
+from shops import all_shops # To find correct shop in shop algorithm
+from bed import all_beds # To find correct bed in bed algrorithm
+from Map import all_maps
 
 
 
@@ -102,12 +103,112 @@ class player(character):
         self.story_tracker = story_tracker #Tracks story and allows for starting game at various points in story
         self.in_battle = False
 
-    ######################################################### STORY INTERACTIONS ###############################################################
-    def interact(self,placeholder):
-        for character in all_story_characters:
-            if placeholder == character.key:
-                p(f"{character.name}:")
-                character.interact(self)
+    ######################################################### INTERACTIONS ###############################################################
+    def interact(self,typ,placeholder):
+        if typ == "storyCharacter":
+            for character in all_story_characters:
+                if placeholder == character.key:
+                    p(f"{character.name}:")
+                    character.interact(self)
+
+        elif typ == "bed":
+            for bed in all_beds: # Determine which bed using bed keys and given key
+                if bed.key == placeholder:
+                    x = p(f"This bed will cost {bed.cost} for the night \n Do you wish to continue? yes/no?",inp=True) # User confirmation
+                    if x.lower() == "yes": # Lowercase to avoid captil letter errors
+                        if self.gold > bed.cost: # Given user has enough gold (incase of hotel)
+                            self.gold -= bed.cost # Deducts gold cost
+                            self.HP = self.max_HP # Resets HP
+                            self.savegame() # Saves game
+                            p("The game has been saved")
+                        else:
+                            p("You have insufficient gold")
+                    elif x.lower() == "no": # If user chooses no, allow user back to map
+                        pass
+                    else:
+                        p("Invalid input") # Any other inputs are met with this error message
+
+        elif typ == "shop":
+            for shop in all_shops: # To determine which items to display search for shop in all shops
+                if shop.key == placeholder: # Once found, print list of available items
+                    str1 = "Welcome,  we have: "
+                    for i in shop.available_items:
+                        str1 += f"\n{i.name} for {i.value} gold"
+                    x = p(str1 + "\nWould you like to purchase anything? if no type exit otherwise select an item",inp=True) # Ask user for purchase
+                    if x == "exit": # if user changes mind
+                        break
+                    else:
+                        temp = None # Need to initiate variable outside loop, set to None for convienence
+                        for i in shop.available_items:
+                            if i.name.lower() == x.lower(): # puts all letters into lowercase to avoid captial letter errors
+                                temp = i
+                        if temp != None: # If temp has been assigned a new value
+                            if self.gold > temp.value: # if player has enough gold
+                                try:
+                                    item_added = self.add_item(temp)
+                                    if item_added == True:
+                                        self.gold -= temp.value
+                                except:
+                                    p("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
+                            else:
+                                p("insufficient gold")
+                        else:
+                            p("Invalid input, please try again")
+
+    ########################################################  FIGHT  ##############################################################################################
+    def battle(self, opponent):
+        winner = None  # Set winner equal to None, incase player decides to run away
+        while winner == None:   # When a new winner is set the battle is over 
+            opponent.attack(self) # Since enemies suprise the player, they get to attack first
+            if self.HP <= 0: # Check if somone has won 
+                winner = opponent.name
+                p(f"{self.name} has been defeated.")
+                break
+            next_move = p("What is your next move? 1 = attack, 2 = use item , 3 = try to run ",inp = True)
+            if next_move == "1": # If user chooses to retaliate
+                self.attack(opponent)
+                if opponent.HP <= 0: # Check if somone has won
+                    winner = self.name
+                    p(f"{opponent.name} has been defeated.")
+            elif next_move == "2": # If user chooses to use an item
+                item_selected = False # To ensure an item is actually selected and to loop around if it is not
+                while item_selected == False:
+                    # Item selection or exit
+                    x = p("Which item would you like to use? type exit to return to battle ",inp=True)
+                    if x == "exit":
+                        item_selected = True
+                    else:
+                        outcome = self.use_item(x)
+                        if outcome == True:
+                            item_selected = True
+                            p(f"{x} was used")
+                        else:
+                            p("Invalid Input")
+            elif next_move == "3": # If user chooses to try and run away
+                value = random() # Generate float between 0 and 1
+                if value > 0.75: # To make it a 25% chance of success
+                    p("You got away")
+                    winner = "No winner"
+                else:
+                    p("You got blocked")
+            else: # If entry was invalid
+                p("Invalid entry, while you were choosing your were attacked....")
+
+        if self.name == winner: # If user has won
+            for i in opponent.items:
+                self.add_item(i)
+            self.gold += opponent.gold # Steal enemies gold
+            self.exp_gain(opponent) # Gain experinece points
+            p(f"{self.name} wins..... {self.name} loot {opponent.gold} and {opponent.items}")
+        elif opponent.name == winner: # If user has been killed
+            p("You will be taken to your last save location")
+            self.death()
+
+        return winner
+
+
+
+
 
     ######################################################## LEVEL BASED MAP LIMITER ############################################################
     def limiter(self,placeholder):
@@ -314,16 +415,13 @@ class player(character):
         rand_flt = random() # Generate a random uniform float number between 0 and 1 
         if rand_flt < 0.7: # 70% probability of occurance
             opponent = a
-            this_fight = fight() # Create fight object
-            this_fight.full_battle(self, opponent) # engage in battle
+            self.battle(opponent)
         elif rand_flt > 0.7 and rand_flt < 0.95: # 25% probability of occurance
             opponent = b
-            this_fight = fight()
-            this_fight.full_battle(self, opponent)
+            self.battle(opponent)
         else: #5% probability of occurance
             opponent = c
-            this_fight = fight()
-            this_fight.full_battle(self, opponent)
+            self.battle(opponent)
 
             
 
@@ -351,10 +449,11 @@ class player(character):
                 self.world_map_enemies(enemy(level=10,name=""),enemy(level=11,name=""),enemy(level=12,name=""))
             elif val == 30:
                 self.world_map_enemies(enemy(level=13,name=""),enemy(level=14,name=""),enemy(level=15,name=""))
+            elif val == 10:
+                pass
             else: # If battle is not on world map then use enemies dict. to find right strength enemy
-                opp = enemy(level=val-10,name=enemy_name(val-10))
-                this_fight = fight()
-                this_fight.full_battle(self, opp)
+                opponent = enemy(level=val-10,name=enemy_name(val-10))
+                self.battle(opponent)
 
 
 
@@ -371,11 +470,11 @@ class player(character):
         elif val == 50: # To enter a door to another map limited by storyline
             self.limiter(placeholder)
         elif val == 40: # To interact with a shop
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90: # To interact with a bed
-            self.current_location.bed(self,placeholder)
+            self.interact("bed", placeholder)
         elif val == 80: # To interact with a story character
-            self.interact(placeholder)
+            self.interact("storyCharacter",placeholder)
         elif val == 70: # To get across river
             if boat in self.items:
                 self.current_location.col -= 1
@@ -396,11 +495,11 @@ class player(character):
         elif val == 50:
             self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
+            self.interact("bed", placeholder)
         elif val == 80:
-            self.interact(placeholder)
+            self.interact("storyCharacter",placeholder)
         elif val == 70: 
             if boat in self.items:
                 self.current_location.col += 1
@@ -419,11 +518,11 @@ class player(character):
         elif val == 50:
             self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
+            self.interact("bed", placeholder)
         elif val == 80:
-            self.interact(placeholder)
+            self.interact("storyCharacter",placeholder)
         elif val == 70: 
             if boat in self.items:
                 self.current_location.row -= 1
@@ -443,11 +542,11 @@ class player(character):
         elif val == 50:
             self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
+            self.interact("bed", placeholder)
         elif val == 80:
-            self.interact(placeholder)
+            self.interact("storyCharacter",placeholder)
         elif val == 70: 
             if boat in self.items:
                 self.current_location.row += 1

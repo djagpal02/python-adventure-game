@@ -2,7 +2,6 @@ import time
 all_story_characters = []
 from items import basic_sword, hp_pot, earls_gold, boat
 from enemy import enemy
-from fight import fight
 from gui import printer as p
 
 
@@ -90,8 +89,7 @@ class wolfernius(story_character):
             I guess you will have to do
             {self.name} attacks""")
             opponent = enemy(5, "Wolfernius")
-            this_fight = fight()
-            winner = this_fight.full_battle(player,opponent)
+            winner = player.battle(opponent)
             time.sleep(2)
             if winner == player.name:
                 player.story_tracker = 4
@@ -196,8 +194,7 @@ class serpant_queen(story_character):
             thinkssss AGAIN!
             {self.name} attacks""")
             opponent = enemy(10, "Serpant Queen")
-            this_fight = fight()
-            winner = this_fight.full_battle(player,opponent)
+            winner = player.battle(opponent)
             time.sleep(2)
             if winner == player.name:
                 player.story_tracker = 6
@@ -230,8 +227,7 @@ class minion(story_character):
             p(f"""By Lord Drakthor you shall not pass
             {self.name} attacks""")
             opponent = enemy(15, "Drakthor's Minion")
-            this_fight = fight()
-            winner = this_fight.full_battle(player,opponent)
+            winner = player.battle(opponent)
             time.sleep(2)
             if winner == player.name:
                 player.story_tracker = 8
@@ -326,8 +322,7 @@ class sion(story_character):
             BIG MISTAKE!
             {self.name} attacks""")
             opponent = enemy(20, "Sion")
-            this_fight = fight()
-            winner = this_fight.full_battle(player,opponent)
+            winner = player.battle(opponent)
             time.sleep(2)
             if winner == player.name:
                 player.story_tracker = 9
@@ -375,8 +370,7 @@ class drakthor(story_character):
             MY MINION WILL SLAY YOU
             Minion attacks""")
             opponent = enemy(25, "Drakthor's Minon")
-            this_fight = fight()
-            winner = this_fight.full_battle(player,opponent)
+            winner = player.battle(opponent)
             time.sleep(2)
             if winner == player.name:
                 p("""Well done against my minion, maybe I underestimated you...")
@@ -385,8 +379,7 @@ class drakthor(story_character):
                 DRAGONTHOR:
                 LETS TEST MY NEW STRENGTH ON YOU""")
                 opponent = enemy(35, "DRAGONTHOR")
-                this_fight = fight()
-                winner = this_fight.full_battle(player,opponent)
+                winner = player.battle(opponent)
                 time.sleep(2)
                 if winner == player.name:
                     p("""Thank you for playing.
