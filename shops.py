@@ -43,16 +43,6 @@ class shop:
 
 
 
-    def display_items(self):
-        """
-        Prints list of available items and price to console
-        """
-        p("At this shop we have: ")
-        stri = ""
-        for item in self.available_items:
-            stri += f"{item.name} for {item.value} gold"
-        p(stri)
-
 
 
     def purchase(self,player, x):

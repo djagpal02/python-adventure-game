@@ -1,7 +1,7 @@
 from character import character # Inheritence
 from items import pot, weapon, shield, armour ,all_items, boat # To check bag for duplicate items
 from fight import fight # To enage in battle
-from enemy import enemies, a1, a2, a3, b1, b2, b3, c1, c2, c3, d1, d2, d3, e1, e2, e3,boss # For random battles accross map
+from enemy import enemy, enemy_name# For random battles accross map
 from random import random
 from location import location # To set initial location
 from Map import home # To set intitial location
@@ -100,7 +100,7 @@ class player(character):
         self.max_HP = 500 + self.level*200
         self.AD = self.level*50  # AD increases 50 per level
         self.story_tracker = story_tracker #Tracks story and allows for starting game at various points in story
-
+        self.in_battle = False
 
     ######################################################### STORY INTERACTIONS ###############################################################
     def interact(self,placeholder):
@@ -121,21 +121,6 @@ class player(character):
             p("You cannot go here yet...")
         else:
             self.current_location.changemap(placeholder)
-
-
-
-
-
-    #########################################################  SHOW STATS  ##################################################################################
-    def show_stats(self):
-        """
-        Prints user stats to the console along with contents of user bag
-        """
-        p(f"""\nName : {self.name} \nLevel: {self.level} \nAD: {self.AD} \nHP: {self.HP} \nMAX HP: {self.max_HP} \nEXP: {self.EXP} \nEXP for level up: {self.exp_needed} \nGold: {self.gold}
-        \n...\n\nIn your bag:\n""") #prints(user stats)
-        for item in self.items.keys(): # Prints items and quantities
-            p(f"{item.name} x {self.items[item]}")
-
 
 
     #########################################################  SAVEGAME  ####################################################################################
@@ -289,11 +274,9 @@ class player(character):
                 p(f"{item.name} has been added to your inventory")
             else:
                 if x in contents: # if it is not a pot then matching types cannot be bough until an old one is gotten rid off
-                    p(f"Please get rid of your old weapon/shield/armour before purchasing a new one")
-                    removal = input("Would you like to get rid of an item? (yes/no)") # Allow user to delete old item
+                    removal = p("Please get rid of your old weapon/shield/armour before purchasing a new one \nWould you like to get rid of an item? (yes/no)",inp=True) # Allow user to delete old item
                     if removal.lower() == "yes":
-                        self.show_stats() # Show items for user 
-                        to_be_removed = input("What item would you like removed? (Enter name)") # Find item to be deleted
+                        to_be_removed = p("What item would you like removed? (Enter name)",inp=True) # Find item to be deleted
                         for i in all_items:
                             if i.name.lower() == to_be_removed.lower():
                                 self.remove_item(i)
@@ -330,15 +313,15 @@ class player(character):
         """
         rand_flt = random() # Generate a random uniform float number between 0 and 1 
         if rand_flt < 0.7: # 70% probability of occurance
-            opponent = a()
+            opponent = a
             this_fight = fight() # Create fight object
             this_fight.full_battle(self, opponent) # engage in battle
         elif rand_flt > 0.7 and rand_flt < 0.95: # 25% probability of occurance
-            opponent = b()
+            opponent = b
             this_fight = fight()
             this_fight.full_battle(self, opponent)
         else: #5% probability of occurance
-            opponent = c()
+            opponent = c
             this_fight = fight()
             this_fight.full_battle(self, opponent)
 
@@ -359,21 +342,19 @@ class player(character):
         flt = random() # Random number to decide how often a random battle should occur
         if flt < 0.3:
             if val == 26: # Set regions have varying levels of difficulty in terms of enemies
-                self.world_map_enemies(a1,a2,a3)
+                self.world_map_enemies(enemy(level=1,name=""),enemy(level=2,name=""),enemy(level=3,name=""))
             elif val == 27:
-                self.world_map_enemies(b1,b2,b3)
+                self.world_map_enemies(enemy(level=4,name=""),enemy(level=5,name=""),enemy(level=6,name=""))
             elif val == 28:
-                self.world_map_enemies(c1,c2,c3)
+                self.world_map_enemies(enemy(level=7,name=""),enemy(level=8,name=""),enemy(level=9,name=""))
             elif val == 29:
-                self.world_map_enemies(d1,d2,d3)
+                self.world_map_enemies(enemy(level=10,name=""),enemy(level=11,name=""),enemy(level=12,name=""))
             elif val == 30:
-                self.world_map_enemies(e1,e2,e3)
+                self.world_map_enemies(enemy(level=13,name=""),enemy(level=14,name=""),enemy(level=15,name=""))
             else: # If battle is not on world map then use enemies dict. to find right strength enemy
-                for num,opp in enemies.items():
-                    if val == num:
-                        opponent = opp()
-                        this_fight = fight()
-                        this_fight.full_battle(self, opponent)
+                opp = enemy(level=val-10,name=enemy_name(val-10))
+                this_fight = fight()
+                this_fight.full_battle(self, opp)
 
 
 

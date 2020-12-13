@@ -37,6 +37,7 @@ class fight:
         :return winner: returns the name of the winner
         :return type: str
         """
+        player.in_battle = True
         winner = None  # Set winner equal to None, incase player decides to run away
         while winner == None:   # When a new winner is set the battle is over 
             opponent.attack(player) # Since enemies suprise the player, they get to attack first
@@ -44,7 +45,7 @@ class fight:
                 winner = opponent.name
                 p(f"{player.name} has been defeated.")
                 break
-            next_move = input("What is your next move? 1 = attack, 2 = use item , 3 = try to run ")
+            next_move = p("What is your next move? 1 = attack, 2 = use item , 3 = try to run ",inp = True)
             if next_move == "1": # If user chooses to retaliate
                 player.attack(opponent)
                 if opponent.HP <= 0: # Check if somone has won
@@ -57,10 +58,10 @@ class fight:
                     for i in player.items:
                         p(i.name)   
                     # Item selection or exit
-                    x = input("Which item would you like to use? type exit to return to battle ")
+                    x = p("Which item would you like to use? type exit to return to battle ",inp=True)
                     if x == "exit":
                         item_selected = True
-                    else: 
+                    else:
                         outcome = player.use_item(x)
                         if outcome == True:
                             item_selected = True
@@ -103,10 +104,10 @@ class fight:
             for i in opponent.items:
                 player.add_item(i)
             player.gold += opponent.gold # Steal enemies gold
-            player.exp_gain(opponent) # Gain experinece points 
+            player.exp_gain(opponent) # Gain experinece points
             p(f"{player.name} wins..... {player.name} loot {opponent.gold} and {opponent.items}")
         elif opponent.name == winner: # If user has been killed
             p("You will be taken to your last save location")
             player.death()
-
+        player.in_battle = False
         return winner

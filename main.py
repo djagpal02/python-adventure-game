@@ -139,12 +139,6 @@ def movement(move,textui,this_game,myApp=myApp):
             this_game.user.right()
             textui.show_map(this_game)
             myApp.show_map2(this_game)
-        #elif move == "exit":
-        #   game_active = False
-        elif move == "stats":
-            this_game.user.show_stats()
-        else:
-            this_game.menu()
 
 def main():
     """

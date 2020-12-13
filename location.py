@@ -88,10 +88,10 @@ class location:
         """
         for shop in all_shops: # To determine which items to display search for shop in all shops
             if shop.key == placeholder: # Once found, print list of available items
-                p(f"Welcome,  we have: ")
+                str1 = "Welcome,  we have: "
                 for i in shop.available_items:
-                    p(f"{i.name} for {i.value} gold")
-                x = input("Would you like to purchase anything? if no type exit otherwise select an item") # Ask user for purchase
+                    str1 += f"\n{i.name} for {i.value} gold"
+                x = p(str1 + "\nWould you like to purchase anything? if no type exit otherwise select an item",inp=True) # Ask user for purchase
                 if x == "exit": # if user changes mind
                     break
                 else:
@@ -113,7 +113,7 @@ class location:
         """
         for bed in all_beds: # Determine which bed using bed keys and given key
             if bed.key == placeholder:
-                x = input(f"This bed will cost {bed.cost} for the night \n Do you wish to continue? yes/no?") # User confirmation
+                x = p(f"This bed will cost {bed.cost} for the night \n Do you wish to continue? yes/no?",inp=True) # User confirmation
                 if x.lower() == "yes": # Lowercase to avoid captil letter errors
                     bed.use_bed(player) # If user wants to use bed, send to use_bed algorithm 
                 elif x.lower() == "no": # If user chooses no, allow user back to map
