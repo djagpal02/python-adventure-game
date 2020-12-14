@@ -101,7 +101,6 @@ class player(character):
         self.max_HP = 500 + self.level*200
         self.AD = self.level*50  # AD increases 50 per level
         self.story_tracker = story_tracker #Tracks story and allows for starting game at various points in story
-        self.in_battle = False
 
     ######################################################### INTERACTIONS ###############################################################
     def interact(self,typ,placeholder):

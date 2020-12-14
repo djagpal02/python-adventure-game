@@ -117,10 +117,6 @@ def startgame(App):
         t_game = new_game(x)
     return t_game
 
-
-def inpt():
-    pass
-
 def movement(move,textui,this_game,myApp=myApp):
     if myApp.contin == True:
         if move == "a":
