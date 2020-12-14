@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from PIL import ImageTk, Image
 import time
 from grid_point import grid_element
@@ -8,13 +9,19 @@ class App():
         # Set frames
         self.frame1 = tk.Frame(root,highlightbackground="green", highlightcolor="green", highlightthickness=1,width=625, height = 625, borderwidth=2 )
         self.frame1.pack_propagate(0)
-        self.frame2 = tk.Frame(root, highlightbackground="red", highlightcolor="red", highlightthickness=1,width=625, height=425,borderwidth=2)
+        self.frame2 = tk.Frame(root, highlightbackground="red", highlightcolor="red", highlightthickness=1,width=625, height=325,borderwidth=2)
         self.frame3 = tk.Frame(root, highlightbackground="blue", highlightcolor="blue", highlightthickness=1,width=625, height=200,borderwidth=2)
         self.frame4 = tk.Frame(root, highlightbackground="black", highlightcolor="black", highlightthickness=1,width=625, height=200,borderwidth=2)
+        self.frame5 = tk.Frame(root, highlightbackground="yellow", highlightcolor="yellow", highlightthickness=1,width=625, height=50,borderwidth=2)
+        self.frame6 = tk.Frame(root, highlightbackground="yellow", highlightcolor="yellow", highlightthickness=1,width=625, height=50,borderwidth=2)
         self.frame1.pack_propagate(0)
         self.frame1.pack(side= tk.LEFT)
         self.frame4.pack_propagate(0)
         self.frame4.pack(side = tk.TOP)
+        self.frame6.pack_propagate(0)
+        self.frame6.pack()
+        self.frame5.pack_propagate(0)
+        self.frame5.pack()
         self.frame2.pack_propagate(0)
         self.frame2.pack()
         self.frame3.pack_propagate(0)
@@ -50,6 +57,12 @@ class App():
         self.entryIntro.grid(row=5)
         self.enter = tk.Button(self.frame2,text = "enter", command = self.intro)
         self.enter.grid(row=6)
+
+        # Fight info Label
+        self.fightinfo = tk.Label(self.frame5, text = "")
+        self.fightinfo.pack()
+        self.fightinfo_row1 = tk.Label(self.frame5, text = "")
+        self.fightinfo_row1.pack()
 
         # To pause after messages
         self.contin = False
@@ -88,34 +101,34 @@ class App():
             self.frame1.rowconfigure(i,pad=1)
 
 
-        self.name = tk.Label(self.frame3, text = "")
-        self.name.grid(row=2, column=0)
-        self.level = tk.Label(self.frame3,text = "")
-        self.level.grid(row=3, column=0)
-        self.ad = tk.Label(self.frame3, text = "")
-        self.ad.grid(row = 4, column=0)
-        self.hp = tk.Label(self.frame3, text = "")
-        self.hp.grid(row=5, column=0)
-        self.max_HP = tk.Label(self.frame3, text = "")
-        self.max_HP.grid(row=6, column=0)
-        self.EXP = tk.Label(self.frame3, text = "")
-        self.EXP.grid(row=7, column=0)
-        self.exp_needed = tk.Label(self.frame3,text = "")
-        self.exp_needed.grid(row=8, column=0)
-        self.gold = tk.Label(self.frame3, text = "")
-        self.gold.grid(row=9, column=0)
+        self.stats = tk.Label(self.frame3, text = "")
+        self.stats.grid(row=1, column=0)
+
         self.items = tk.Label(self.frame3, text = "")
         self.items.grid(row=1, column=1)
 
 
         # User instructions
         self.instructions = tk.Label(self.frame3, text = "Keys \nW - Up \nS - Down \nA - Left \nD - Right \nReturn - Continue")
-        self.instructions.grid(row=1, column=3)
+        self.instructions.grid(row=1, column=2)
 
         # Location Label 
         self.big_loc = tk.Label(self.frame4, text = "")
         self.big_loc.grid()
         self.big_loc.config(width = 50)
+
+        # Health bars
+        #playerHP_blocks = []
+        #oppHP_blocks = []
+        #for i in range(20):
+        #    strng = "playerHP" + str(i)
+        #    self.strng = tk.Label(self.frame6,image=self.img1)
+        #    self.strng.grid(row=0,column=i)
+        #    playerHP_blocks.append(self.strng)
+        #    strng2 = "opponentHP" + str(i)
+        #    self.strng2 = tk.Label(self.frame6,image= self.img1)
+        #    self.strng2.grid(row=1,column=i)
+        #    oppHP_blocks.append(self.strng2)
 
     #############################################################################################################################################
 
@@ -141,6 +154,15 @@ class App():
     def new_msg(self,message):
         self.label1.configure(text=message)
         self.contin = False
+    
+    def new_msg_f5(self,message,row_num):
+        if row_num == 0:
+            self.fightinfo.configure(text=message)
+        if row_num == 1:
+            self.fightinfo_row1.configure(text=message)
+
+    def new_warning(self,msg):
+        messagebox.showinfo(title="Info", message=msg)
     
     def contin_switch(self):
         self.label1.configure(text='')
@@ -226,14 +248,7 @@ class App():
         
 
     def show_stats(self,game):
-        self.name.configure(text = "Name: " + game.user.name)
-        self.level.configure(text = "Level: " + str(game.user.level))
-        self.ad.configure(text = "AD: " + str(game.user.AD ))
-        self.hp.configure(text = "HP: " + str(game.user.HP))
-        self.max_HP.configure(text = "MAX HP: " + str(game.user.max_HP))
-        self.EXP.configure(text = "EXP: " + str(game.user.EXP))
-        self.exp_needed.configure(text = "EXP FOR NEXT LEVEL: " + str(game.user.exp_needed))
-        self.gold.configure(text = "GOLD: " + str(game.user.gold))
+        self.stats.configure(text = f"Name:  {game.user.name}\nLevel:  {game.user.level} \nAD: {game.user.AD} \nHP:  {game.user.HP}\nMAX HP:  {game.user.max_HP} \nEXP:  {game.user.EXP} \nEXP FOR NEXT LEVEL:  {game.user.exp_needed} \nGOLD:  {game.user.gold}")
         strng = "In your bag:"
         for item in game.user.items.keys():
             strng += f"\n{item.name} x {game.user.items[item]}"
@@ -245,7 +260,7 @@ class App():
 
 
 win = tk.Tk()                           # Create a window
-win.title("Grid layout")    
+win.title("Pixel Adventure")    
 win.geometry("1250x625")   
 win.resizable(False, False)  # Set window title
 global myApp  
@@ -263,5 +278,8 @@ def printer(message,app=myApp,inp=False):
 
         return myApp.inp
 
+def warning(message,app=myApp):
+    app.new_warning(message)
 
-
+def printer_frame5(message,row_num, app=myApp,):
+    app.new_msg_f5(message,row_num)

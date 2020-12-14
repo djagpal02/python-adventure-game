@@ -46,21 +46,21 @@ class enemy(character):
 ################################################  Enemies ##############################################################################################
 def enemy_name(level):
     names = {
-        1:"",
-        2:"",
-        3:"",
-        4:"",
-        5:"",
-        6:"",
-        7:"",
-        8:"",
-        9:"",
-        10:"",
-        11:"",
-        12:"",
-        13:"",
-        14:"",
-        15:""
+        1:"Stonetree",
+        2:"Razorfoot",
+        3:"Phasewings",
+        4:"Mistscreamer",
+        5:"Corpsebug",
+        6:"Murkbody",
+        7:"Moldchild",
+        8:"Brinestep",
+        9:"Infernobrood",
+        10:"Warpclaw",
+        11:"Dark Flame Baby Dragon",
+        12:"Nighttalon",
+        13:"Voodootooth",
+        14:"Long-Horned Frost Anaconda",
+        15:"Titanium Vampire Hound"
     }
     return names[level]
 

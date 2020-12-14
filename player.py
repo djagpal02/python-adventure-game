@@ -9,8 +9,8 @@ from gui import printer as p
 from shops import all_shops # To find correct shop in shop algorithm
 from bed import all_beds # To find correct bed in bed algrorithm
 from Map import all_maps
-
-
+from gui import warning as w
+from gui import printer_frame5 as pf5
 
 class player(character):
     """
@@ -107,7 +107,7 @@ class player(character):
         if typ == "storyCharacter":
             for character in all_story_characters:
                 if placeholder == character.key:
-                    p(f"{character.name}:")
+                    p(f"{character.name}:") ############################************************************* fix this TODO
                     character.interact(self)
 
         elif typ == "bed":
@@ -148,7 +148,7 @@ class player(character):
                                     if item_added == True:
                                         self.gold -= temp.value
                                 except:
-                                    p("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
+                                    w("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
                             else:
                                 p("insufficient gold")
                         else:
@@ -157,6 +157,7 @@ class player(character):
     ########################################################  FIGHT  ##############################################################################################
     def battle(self, opponent):
         winner = None  # Set winner equal to None, incase player decides to run away
+        w(f"{opponent.name} attacks...")
         while winner == None:   # When a new winner is set the battle is over 
             opponent.attack(self) # Since enemies suprise the player, they get to attack first
             if self.HP <= 0: # Check if somone has won 
@@ -180,9 +181,9 @@ class player(character):
                         outcome = self.use_item(x)
                         if outcome == True:
                             item_selected = True
-                            p(f"{x} was used")
+                            w(f"{x} was used")
                         else:
-                            p("Invalid Input")
+                            w("Invalid Input")
             elif next_move == "3": # If user chooses to try and run away
                 value = random() # Generate float between 0 and 1
                 if value > 0.75: # To make it a 25% chance of success
@@ -191,7 +192,7 @@ class player(character):
                 else:
                     p("You got blocked")
             else: # If entry was invalid
-                p("Invalid entry, while you were choosing your were attacked....")
+                w("Invalid entry, while you were choosing your were attacked....")
 
         if self.name == winner: # If user has won
             for i in opponent.items:
@@ -202,7 +203,10 @@ class player(character):
         elif opponent.name == winner: # If user has been killed
             p("You will be taken to your last save location")
             self.death()
-
+        
+        # To clear frame5
+        pf5("",0)
+        pf5("",1)
         return winner
 
 
@@ -266,7 +270,7 @@ class player(character):
         if self.EXP > self.exp_needed: # If EXP meets requirements LEVEL UP
             self.level += 1
             self.exp_needed = int(self.exp_needed + 500*(1.1**self.level))
-            p(f"{self.name} just leveled up to Level {self.level}!!")
+            w(f"{self.name} just leveled up to Level {self.level}!!")
     
 
 
@@ -439,15 +443,15 @@ class player(character):
         flt = random() # Random number to decide how often a random battle should occur
         if flt < 0.3:
             if val == 26: # Set regions have varying levels of difficulty in terms of enemies
-                self.world_map_enemies(enemy(level=1,name=""),enemy(level=2,name=""),enemy(level=3,name=""))
+                self.world_map_enemies(enemy(level=1,name=enemy_name(1)),enemy(level=2,name =enemy_name(2)),enemy(level=3,name =enemy_name(3)))
             elif val == 27:
-                self.world_map_enemies(enemy(level=4,name=""),enemy(level=5,name=""),enemy(level=6,name=""))
+                self.world_map_enemies(enemy(level=4,name =enemy_name(4)),enemy(level=5,name =enemy_name(5)),enemy(level=6,name =enemy_name(6)))
             elif val == 28:
-                self.world_map_enemies(enemy(level=7,name=""),enemy(level=8,name=""),enemy(level=9,name=""))
+                self.world_map_enemies(enemy(level=7,name =enemy_name(7)),enemy(level=8,name =enemy_name(8)),enemy(level=9,name =enemy_name(9)))
             elif val == 29:
-                self.world_map_enemies(enemy(level=10,name=""),enemy(level=11,name=""),enemy(level=12,name=""))
+                self.world_map_enemies(enemy(level=10,name =enemy_name(10)),enemy(level=11,name =enemy_name(11)),enemy(level=12,name =enemy_name(12)))
             elif val == 30:
-                self.world_map_enemies(enemy(level=13,name=""),enemy(level=14,name=""),enemy(level=15,name=""))
+                self.world_map_enemies(enemy(level=13,name =enemy_name(13)),enemy(level=14,name =enemy_name(14)),enemy(level=15,name =enemy_name(15)))
             elif val == 10:
                 pass
             else: # If battle is not on world map then use enemies dict. to find right strength enemy

@@ -3,7 +3,8 @@ all_story_characters = []
 from items import basic_sword, hp_pot, earls_gold, boat
 from enemy import enemy
 from gui import printer as p
-
+from gui import warning as w
+from abc import abstractmethod
 
 class story_character:
     def __init__(self, name, key, speech = [], items_gained = [], ):
@@ -20,6 +21,7 @@ class mom(story_character):
     def __init__(self, name, key):
         super().__init__(name, key)
 
+    @abstractmethod
     def interact(self,player):
         if player.story_tracker == 1: # Until spoken to leader
             p(f"Good Morning {player.name}! \nChief wants to speak to you, maybe you should go over to his house \nMake sure your safe, its getting really bad out there...")
@@ -85,9 +87,8 @@ class wolfernius(story_character):
 
     def interact(self,player):
         if player.story_tracker <= 3:
-            p(f"""You better have brought me some sheep...
-            I guess you will have to do
-            {self.name} attacks""")
+            p("""You better have brought me some sheep...
+            I guess you will have to do""")
             opponent = enemy(5, "Wolfernius")
             winner = player.battle(opponent)
             time.sleep(2)
@@ -190,9 +191,8 @@ class serpant_queen(story_character):
 
     def interact(self,player):
         if player.story_tracker <= 5:
-            p(f"""SSSSSSSSsssssssssssssssssssssso you thinksss you can take my goldssss...
-            thinkssss AGAIN!
-            {self.name} attacks""")
+            p("""SSSSSSSSsssssssssssssssssssssso you thinksss you can take my goldssss...
+            thinkssss AGAIN!""")
             opponent = enemy(10, "Serpant Queen")
             winner = player.battle(opponent)
             time.sleep(2)
@@ -224,8 +224,7 @@ class minion(story_character):
 
     def interact(self,player):
         if player.story_tracker == 7:
-            p(f"""By Lord Drakthor you shall not pass
-            {self.name} attacks""")
+            p("By Lord Drakthor you shall not pass")
             opponent = enemy(15, "Drakthor's Minion")
             winner = player.battle(opponent)
             time.sleep(2)
@@ -318,9 +317,8 @@ class sion(story_character):
 
     def interact(self,player):
         if player.story_tracker <= 8:
-            p(f"""You DARE come to my lair...
-            BIG MISTAKE!
-            {self.name} attacks""")
+            p("""You DARE come to my lair...
+            BIG MISTAKE!""")
             opponent = enemy(20, "Sion")
             winner = player.battle(opponent)
             time.sleep(2)
@@ -367,8 +365,7 @@ class drakthor(story_character):
         if player.story_tracker <=10:
             p("""THE END IS HERE!
             YOU CANNOT STOP THIS!
-            MY MINION WILL SLAY YOU
-            Minion attacks""")
+            MY MINION WILL SLAY YOU""")
             opponent = enemy(25, "Drakthor's Minon")
             winner = player.battle(opponent)
             time.sleep(2)

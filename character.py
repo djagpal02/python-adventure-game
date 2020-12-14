@@ -1,6 +1,5 @@
 from random import random
-from gui import printer as p
-
+from gui import printer_frame5 as pf5
 
 class character:
     """
@@ -62,11 +61,11 @@ class character:
         :type opp: enemy.character
         """
         dmg = int(self.AD*(0.75 + 0.5*random())) # Randomize damage from 75% to up to 125%
-        p(f"{self.name} attacks.......{opp.name} takes {dmg} damage") 
+        pf5(f"{self.name} attacks.......{opp.name} takes {dmg} damage",0) 
         opp.HP -= dmg
         if opp.HP < 0: # If health becomes negative, it is set to 0
             opp.HP = 0
-        p(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left")
+        pf5(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left",1)
 
 
 

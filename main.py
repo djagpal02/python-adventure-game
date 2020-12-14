@@ -5,7 +5,7 @@ from items import all_items , pot, weapon, shield, armour# To recreate items dic
 from game import new_game, load_game
 from textui import Textui
 from gui import myApp,win,printer
-import tkinter as tk
+from gui import warning as w
 
 def get_items(x, q):
     """
@@ -111,7 +111,7 @@ def startgame(App):
             user = loadgame(x)
             t_game = load_game(user)
         except:
-            print("Unable to find user data, will load a new game...")
+            w("Unable to find user data, will load a new game...")
             t_game = new_game(x)
     else:
         t_game = new_game(x)
