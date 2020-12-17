@@ -375,7 +375,7 @@ class player(character):
             if x == pot: # New pot 
                 self.items[item] = 1
                 item_added = True
-                p(f"{item.name} has been added to your inventory")
+                w(f"{item.name} has been added to your inventory")
             else:
                 if x in contents: # if it is not a pot then matching types cannot be bough until an old one is gotten rid off
                     removal = p("Please get rid of your old weapon/shield/armour before purchasing a new one \nWould you like to get rid of an item? (yes/no)",inp=True) # Allow user to delete old item
@@ -393,7 +393,7 @@ class player(character):
                     elif type(item) == shield or type(item) == armour:
                         self.HP += item.HP # Scale hp based on items
                         self.max_HP += item.HP
-                    p(f"{item.name} has been added to your inventory")
+                    w(f"{item.name} has been added to your inventory")
         
         return item_added
 
