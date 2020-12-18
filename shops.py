@@ -14,13 +14,6 @@ class shop:
     :type key: str
     :param available_items: Items the shop sells
     :type available_items: list
-    
-    Methods
-    -------
-    display_items()
-        Prints list of available items and price to console
-    purchase(player,x)
-        Matches user input to an item and attempts user purchase
     """
 
 

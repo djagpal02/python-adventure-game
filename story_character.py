@@ -1,28 +1,110 @@
-import time
-all_story_characters = []
-from items import basic_sword, hp_pot, earls_gold, boat
-from enemy import enemy
-from gui import printer as p
+from items import basic_sword, hp_pot, earls_gold, boat # Story Items
+from enemy import enemy # To create boss enemies
+from gui import printer as p 
 from gui import warning as w
-from abc import abstractmethod
+import time
+from abc import abstractmethod # For interact method 
+
+all_story_characters = []
 
 class story_character:
-    def __init__(self, name, key, speech = [], items_gained = [], ):
+    """
+    A class to represent a game story character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
+    def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         self.name = name
         self.key = key 
     
-        all_story_characters.append(self)
+        all_story_characters.append(self) # For ease in looping later
+
+    @abstractmethod
+    def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction based on player progression (player.story_tracker)
+
+        Empty for base class, but since abstract must be filled by all sub classes
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
+        pass
         
 #######################################################  TOWN 1 and CAVE #########################################################################33
 
 
 ############################################################## Mom ###########################################################################
 class mom(story_character):
+    """
+    A class to represent Mom character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
-    @abstractmethod
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 1: # Until spoken to leader
             p(f"Good Morning {player.name}! \nChief wants to speak to you, maybe you should go over to his house \nMake sure your safe, its getting really bad out there...")
         elif player.story_tracker == 2 or player.story_tracker == 3:
@@ -30,15 +112,54 @@ class mom(story_character):
         elif player.story_tracker > 3:
             p("Thank you son, you have really made us proud!!")
 
+        
 
 Mom = mom("Mom", "PARNT")
 
 ############################################################# Chief ##############################################################################
 class chief(story_character):
+    """
+    A class to represent Chief character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 1: 
             p("""I see you got my message...
             I wish we were meeting under better circumstances but here it is...
@@ -55,14 +176,51 @@ class chief(story_character):
             You have saved our village!
             I dont know much about this Drakthor, but maybe Chief Earl from 2TOWN does...""")
 
-
 Chief = chief("Chief", "CHIEF")
 ########################################################### John ###############################################################################
 class john(story_character):
+    """
+    A class to represent John character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 1:
             p("Apprently the Chief was looking for you, I think he is at home...")
         elif player.story_tracker == 2:
@@ -77,15 +235,52 @@ class john(story_character):
         elif player.story_tracker > 3:
             p("YOUR A HEROOO!!!!!")
 
-
 John = john("John", "JOHN-")
 
 ######################################################### wolfernius ########################################################################
 class wolfernius(story_character):
+    """
+    A class to represent Wolfernius character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <= 3:
             p("""You better have brought me some sheep...
             I guess you will have to do""")
@@ -109,7 +304,6 @@ class wolfernius(story_character):
             When Drakthor takes final form...
             I will be back ... *cough*""")
 
-
 Wolfernius = wolfernius("Wolfernius", "WOLFS")
 
 ########################################################### TOWN 2 AND TOWER ####################################################################
@@ -117,10 +311,48 @@ Wolfernius = wolfernius("Wolfernius", "WOLFS")
 
 ########################################################## EARL ############################################################################
 class earl(story_character):
+    """
+    A class to represent Earl character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 4:
             p("""You want to know about Drakthor...
             I might know something that could help...
@@ -139,24 +371,61 @@ class earl(story_character):
             About Drakthor...
             I don't personally know a great deal but ...
             I have heard Drakthor is from Town3, maybe you should check it out...""")
-            player.gold += 2000
-            player.remove_item(earls_gold)
+            player.gold += 2000 # Gains reward
+            player.remove_item(earls_gold) # Item is removed 
             player.story_tracker = 7
         else:
             p("""About Drakthor...
             I don't personally know a great deal but ...
-            I have heard Drakthor is from Town3, maybe you should check it out...""")
-            
+            I have heard Drakthor is from Town3, maybe you should check it out...""")  
     
 Earl = earl("Earl", "EARL-")
 
 ########################################################## Tom ##############################################################################
 
 class tom(story_character):
+    """
+    A class to represent Tom character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 5:
             p("""Apprently the Serpant Queen took Earls gold...
             But what do I know?""")
@@ -169,10 +438,48 @@ Tom = tom("Tom", "2TOM2")
 ######################################################  Rebecca #############################################################################
 
 class rebecca(story_character):
+    """
+    A class to represent Rebecca character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 5:
             p("""I heard the gold stashed at a tower just North-East of here....
             Maybe you should take a look...
@@ -186,10 +493,48 @@ Rebecca = rebecca("Rebecca", "RBKKA")
 ##################################################### Serpant Queen #########################################################################
 
 class serpant_queen(story_character):
+    """
+    A class to represent Serpant Queen character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <= 5:
             p("""SSSSSSSSsssssssssssssssssssssso you thinksss you can take my goldssss...
             thinkssss AGAIN!""")
@@ -219,10 +564,48 @@ Serpant_queen = serpant_queen("Serpant Queen", "SRPQN")
 #########################################################  Minion  ############################################################################
 
 class minion(story_character):
+    """
+    A class to represent Minion character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker == 7:
             p("By Lord Drakthor you shall not pass")
             opponent = enemy(15, "Drakthor's Minion")
@@ -235,16 +618,54 @@ class minion(story_character):
                 p("YOU DO NOT STAND A CHANGE AGAINST THE MIGHTY DRAKTHOR")
         elif player.story_tracker > 7:
             p("In the end, Drakthor will still remain victorious... **Cough**")
-        
+
 Minion = minion("Minion", "MNIMN")
 
 #########################################################  Mayor Quinby  ######################################################################
 
 class mayor(story_character):
+    """
+    A class to represent Mayor character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <= 7:
             p("I... Ca..n't... speak....Drakt..hor...")
         elif player.story_tracker > 7:
@@ -262,10 +683,48 @@ Mayor = mayor("Mayor Quinby", "MAYOR")
 #########################################################  Ben  ############################################################################
 
 class ben(story_character):
+    """
+    A class to represent Ben character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self, name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <= 7:
             p("HELPPP!!!")
         elif player.story_tracker > 7:
@@ -277,10 +736,48 @@ Ben = ben("Ben", "BENNN")
 
 ####################################################  QUEEN  ###################################################################################
 class queen(story_character):
+    """
+    A class to represent Queen character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self,name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <=8:
             p("""I can give you a boat...
             but you have to do something for me in return.
@@ -293,15 +790,53 @@ class queen(story_character):
             player.story_tracker = 10
         else:
             p("Your mission is perilous, good luck to you...")
-        
+
 Queen = queen("Queen Rachel", "QUEEN")
 
 ##################################################### Royal Guard ###################################################################################
 class guard(story_character):
+    """
+    A class to represent Guard character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self,name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <=8:
             p("""If your looking for the Queen, she is inside...
             If your looking for CAVE 4, it is south-east of here""")
@@ -312,10 +847,48 @@ Guard = guard("Royal Guard", "GUARD")
 
 #####################################################  SION  #####################################################################################
 class sion(story_character):
+    """
+    A class to represent Sion character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self,name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <= 8:
             p("""You DARE come to my lair...
             BIG MISTAKE!""")
@@ -332,17 +905,54 @@ class sion(story_character):
                 I SHALL FEAST BY HIS SIDE""")
         elif player.story_tracker > 8:
             p("I wil do whatever you want...")
-
 Sion = sion("Sion", "SIONN")
 ###########################################################  MNTN  ###########################################################################################
 
 ########################################################### Mountain village folk #############################################################
 
 class frosty(story_character):
+    """
+    A class to represent Frosty character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self,name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <=10:
             p("""The end is near...
             Tonight Drakthor becomes DRAGONTHOR!
@@ -358,10 +968,48 @@ Frosty = frosty("Frosty Fred", "FROST")
 ###########################################################  DRAKTHOR #######################################################################
 
 class drakthor(story_character):
+    """
+    A class to represent Drakthor character.
+    
+    These are objects player can interact with.
+    ...
+
+    Arguments
+    ---------
+    :param name: Name of story character
+    :type name: Str
+    :param Key: Unqiue key associated with character
+    :type Key: Str
+
+    Methods
+    -------
+    interact(player)  (abstract Method)
+        A method that controls what the story character says or does to the player character; controls the interaction
+    """
     def __init__(self,name, key):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param name: Name of story character
+        :type name: Str
+        :param Key: Unqiue key associated with character
+        :type Key: Str
+        """
         super().__init__(name, key)
 
     def interact(self,player):
+        """
+        A method that controls what the story character says or does to the player character; controls the interaction
+        ...
+
+        Parameters
+        ----------
+        :param player: represents user
+        :type player: player.character
+        """
         if player.story_tracker <=10:
             p("""THE END IS HERE!
             YOU CANNOT STOP THIS!
@@ -388,6 +1036,5 @@ class drakthor(story_character):
             else:
                 p("YOU DO NOT STAND A CHANGE AGAINST THE MIGHTY DRAKTHOR")
             
-
 DRK = drakthor("Drakthor", "DRKTH")
 

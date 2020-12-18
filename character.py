@@ -1,5 +1,5 @@
-from random import random
-from gui import printer_frame5 as pf5
+from random import random # For randomness in attack damage
+from gui import printer_frame5 as pf5 # For prinitng 
 
 class character:
     """
@@ -57,8 +57,14 @@ class character:
         ...
 
         Parameters
+        ----------
         :param opp: opponent character
         :type opp: enemy.character
+        
+        Return
+        ------
+        :return True: value to inform that method has completed
+        :type True: bool
         """
         dmg = int(self.AD*(0.75 + 0.5*random())) # Randomize damage from 75% to up to 125%
         pf5(f"{self.name} attacks.......{opp.name} takes {dmg} damage",0) 
@@ -67,7 +73,7 @@ class character:
             opp.HP = 0
         pf5(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left",1)
 
-
+        return True
 
 
 

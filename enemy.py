@@ -1,5 +1,5 @@
-from character import character
-from random import random
+from character import character # base class
+from random import random # For randomizing gold carried
 
 class enemy(character):
     """
@@ -30,22 +30,21 @@ class enemy(character):
         :param level: character strength level - determines HP, AD, gold, EXP_given
         :param name: chosen name for character (default = "No Name")
         :param items: Items carried by user (default = {})
+        :param gold: Amount of gold carried
         :param EXP_given: amount of experience points awarded to user if defeated
         :type level: int
         :type name: str
         :type items: list
+        :type gold: int
         :type EXP_given: int
         """
-        self.name = name
         self.gold = int(self.level*50*(0.75 + 0.5*random()))
-        self.items = items
-        self.level = level
         self.EXP_given = int(self.level*200 +150)
 
 
 ################################################  Enemies ##############################################################################################
-def enemy_name(level):
-    names = {
+# Dictionary that contains names of world enemies based on enemy level
+names = {
         1:"Stonetree",
         2:"Razorfoot",
         3:"Phasewings",
@@ -60,7 +59,5 @@ def enemy_name(level):
         12:"Nighttalon",
         13:"Voodootooth",
         14:"Long-Horned Frost Anaconda",
-        15:"Titanium Vampire Hound"
-    }
-    return names[level]
+        15:"Titanium Vampire Hound"}
 

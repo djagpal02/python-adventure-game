@@ -29,14 +29,6 @@ class game:
 
 
 
-    def menu(self):
-        """
-        A function that prints a list of options for the user
-        """
-        print("Please pick from the list [a, w, s, d, stats]")
-
-
-
 
 
 class new_game(game):

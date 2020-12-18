@@ -19,10 +19,6 @@ class location:
     -------
     changemap(placeholder)
         Uses doors and map keys to Jump between maps
-    shop(player, placeholder)
-        Uses shop key to allow player to access shops and make purchases
-    bed(player,placeholder)
-        Uses bed key to allow player to access beds to save game and regenerate hit points
     """
 
 
@@ -56,6 +52,11 @@ class location:
         ----------
         :param placeholder: 2nd value of tuple from matrix map, associated with keys
         :type placeholder: str
+
+        Return
+        ------
+        :return True: TO inform method has been completed
+        :type True: Bool
         """
         x = self.map.key # store current map key before changing map
         for i in all_maps: # Find the map matching the door/key
@@ -68,3 +69,4 @@ class location:
                         self.row = r
                         self.col = c + 1
 
+        return True

@@ -1,5 +1,3 @@
-from gui import printer as p
-
 all_beds = [] # Create list of all beds for later looping
 
 
@@ -34,6 +32,7 @@ class bed:
         self.key = key
         self.cost = cost
 
+        # List created of all beds, so player can loop through and find correct one from map
         all_beds.append(self)
 
 

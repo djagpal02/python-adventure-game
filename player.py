@@ -1,13 +1,13 @@
 from character import character # Inheritence
 from items import pot, weapon, shield, armour ,all_items, boat # To check bag for duplicate items
-from enemy import enemy, enemy_name# For random battles accross map
+from enemy import enemy, names# For random battles accross map
 from random import random
 from location import location # To set initial location
 from Map import home # To set intitial location
 from story_character import all_story_characters, Mom
 from gui import printer as p
 from shops import all_shops # To find correct shop in shop algorithm
-from bed import all_beds # To find correct bed in bed algrorithm
+from bed import all_beds # To find correct bed in bed algorithm
 from Map import all_maps
 from gui import warning as w
 from gui import printer_frame5 as pf5
@@ -37,15 +37,21 @@ class player(character):
     :type gold: int
     :param items: Items carried by user (default = {})
     :type items: dictionary
+    :param story_tracker: Numeric value that represents stages in game progression
+    :type story_tracker: int
 
     Methods
     -------
-    show_stats()
-        Prints user stats to the console along with contents of user bag
+    interact()
+        Logic behind interactions with "objects" on map
+    battle()
+        Fight between player and an opponent
+    limiter(placeholder)
+        Limits access based on story tracker to force progression of story in correct order
     savegame()
         Creates a savegame txt 
     death()
-        Resets location to last_save_location and HP to max_HP
+        Resets location to last_save_location and HP to max_HP and deducts 10% gold
     exp_gain()
         Adds EXP based on enemy and if EXP meets level up requirements, levels up user
     use_item()
@@ -104,11 +110,28 @@ class player(character):
 
     ######################################################### INTERACTIONS ###############################################################
     def interact(self,typ,placeholder):
+        """
+        Logic behind interactions with "objects" on map
+        ...
+
+        Paramters
+        ---------
+        :param typ: Informs what type of object user is interacting with 
+        :type typ: str
+        :param palceholder: 2nd part of tuple from matrix on a map
+        :type placeholder: str
+
+        Return
+        ------
+        :return int: interger value based on typ to confirm completion 
+        :type int: int
+        """
         if typ == "storyCharacter":
             for character in all_story_characters:
                 if placeholder == character.key:
                     p(f"{character.name}:") ############################************************************* fix this TODO
                     character.interact(self)
+            return 0
 
         elif typ == "bed":
             for bed in all_beds: # Determine which bed using bed keys and given key
@@ -126,6 +149,7 @@ class player(character):
                         pass
                     else:
                         p("Invalid input") # Any other inputs are met with this error message
+            return 1
 
         elif typ == "shop":
             for shop in all_shops: # To determine which items to display search for shop in all shops
@@ -153,9 +177,19 @@ class player(character):
                                 p("insufficient gold")
                         else:
                             p("Invalid input, please try again")
+            return 2
 
     ########################################################  FIGHT  ##############################################################################################
     def battle(self, opponent):
+        """
+        Fight between player and an opponent
+        ...
+
+        Parameters
+        ----------
+        :param opponent: enemy for user to fight
+        :param type: enemy.character
+        """
         winner = None  # Set winner equal to None, incase player decides to run away
         w(f"{opponent.name} attacks...")
         while winner == None:   # When a new winner is set the battle is over 
@@ -215,6 +249,15 @@ class player(character):
 
     ######################################################## LEVEL BASED MAP LIMITER ############################################################
     def limiter(self,placeholder):
+        """
+        Limits access based on story tracker to force progression of story in correct order
+        ...
+
+        Parameters
+        ----------
+        :param placeholder: key of a map
+        :type placeholder: str
+        """
         x = self.story_tracker
 
         if x < 4 and placeholder in ['2TOWN','TOWER','3TOWN','4TOWN','2CAVE']:
@@ -247,7 +290,7 @@ class player(character):
     #########################################################  DEATH  ###########################################################################################
     def death(self):
         """
-        Resets location to last_save_location and HP to max_HP
+        Resets location to last_save_location and HP to max_HP and deducts 10% gold
         """
         self.current_location = location(self.last_save_location.map, self.last_save_location.row, self.last_save_location.col) # Reset location
         self.HP = self.max_HP # Reset HP
@@ -297,8 +340,11 @@ class player(character):
             if i.name.lower() == x.lower(): # lower case to avoid captial letter errors
                 if type(i) == pot: # can only be used if item is a pot
                     temp = i
-                    i.use(self)
-                    used = True
+                    if self.HP + i.regen < self.max_HP:
+                        self.HP += i.regen
+                    else:
+                        self.HP = self.max_HP
+                used = True
         try:
             if self.items[temp] > 1: # if the above was successfull temp will now be assigned otherwise this will have an error and except will run
                 self.items[temp] -= 1 # if pot was used the quantity must go down by 1
@@ -443,19 +489,19 @@ class player(character):
         flt = random() # Random number to decide how often a random battle should occur
         if flt < 0.3:
             if val == 26: # Set regions have varying levels of difficulty in terms of enemies
-                self.world_map_enemies(enemy(level=1,name=enemy_name(1)),enemy(level=2,name =enemy_name(2)),enemy(level=3,name =enemy_name(3)))
+                self.world_map_enemies(enemy(level=1,name=names[1]),enemy(level=2,name =names[2]),enemy(level=3,name =names[3]))
             elif val == 27:
-                self.world_map_enemies(enemy(level=4,name =enemy_name(4)),enemy(level=5,name =enemy_name(5)),enemy(level=6,name =enemy_name(6)))
+                self.world_map_enemies(enemy(level=4,name =names[4]),enemy(level=5,name =names[5]),enemy(level=6,name =names[6]))
             elif val == 28:
-                self.world_map_enemies(enemy(level=7,name =enemy_name(7)),enemy(level=8,name =enemy_name(8)),enemy(level=9,name =enemy_name(9)))
+                self.world_map_enemies(enemy(level=7,name =names[7]),enemy(level=8,name =names[8]),enemy(level=9,name =names[9]))
             elif val == 29:
-                self.world_map_enemies(enemy(level=10,name =enemy_name(10)),enemy(level=11,name =enemy_name(11)),enemy(level=12,name =enemy_name(12)))
+                self.world_map_enemies(enemy(level=10,name =names[10]),enemy(level=11,name =names[11]),enemy(level=12,name =names[12]))
             elif val == 30:
-                self.world_map_enemies(enemy(level=13,name =enemy_name(13)),enemy(level=14,name =enemy_name(14)),enemy(level=15,name =enemy_name(15)))
+                self.world_map_enemies(enemy(level=13,name =names[13]),enemy(level=14,name =names[14]),enemy(level=15,name =names[15]))
             elif val == 10:
                 pass
             else: # If battle is not on world map then use enemies dict. to find right strength enemy
-                opponent = enemy(level=val-10,name=enemy_name(val-10))
+                opponent = enemy(level=val-10,name=names[val-10])
                 self.battle(opponent)
 
 
