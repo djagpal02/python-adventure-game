@@ -72,7 +72,7 @@ class character:
         if opp.HP < 0: # If health becomes negative, it is set to 0
             opp.HP = 0
         pf5(f"{self.name} has {self.HP} left and {opp.name} has {opp.HP} left",1)
-
+        
         return True
 
 

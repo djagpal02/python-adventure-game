@@ -33,6 +33,7 @@ class item:
         self.name = name
         self.value = value
 
+        # Create list of items for ease to loop over all items later
         all_items.append(self)
 
     
@@ -172,11 +173,6 @@ class pot(item):
     :type value: int
     :param regen: hit points that can be regenerated 
     :type regen: int
-
-    Methods
-    -------
-    use(player)
-        Remove item from player bag and use to regenerate hit points
     """
     def __init__(self,key,name,value, regen):
         """
@@ -196,23 +192,6 @@ class pot(item):
         """
         super().__init__(key,name,value)
         self.regen = regen
-
-
-
-    def use(self, player):
-        """
-        Remove item (pot) from player bag and use to regenerate hit points
-        ...
-
-        Parameters
-        ----------
-        :param player: game user
-        :type player: player.character
-        """
-        if player.HP + self.regen < player.max_HP:
-            player.HP += self.regen
-        else:
-            player.HP = player.max_HP
 
 
 
@@ -248,3 +227,9 @@ dragonscale_armour = armour("dsa","DragonScale Armour", 50000, 3000)
 hp_pot = pot("hpo","Health Potion", 150, 75)
 magic_pot = pot("mpo","Magic Potion", 600, 400)
 ultimate_pot = pot("upo","Ultimate Potion", 3000, 2500)
+
+
+########### Story Items ###############
+
+earls_gold = item("egl","Earl's Gold", 0)
+boat = item("bt-", "Boat",0)

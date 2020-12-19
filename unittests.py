@@ -1,12 +1,13 @@
-from bed import bed
+from bed import bed, all_beds
 from character import character
 from enemy import enemy
-from items import item, weapon, shield, armour, pot
+from items import item, weapon, shield, armour, pot, hp_pot, basic_shield, royal_shield, magic_pot
 from Map import Map, all_maps, home_town, home
-from shops import shop
+from shops import shop, all_shops
 from location import location
-from story_character import story_character
+from story_character import story_character, all_story_characters
 from player import player
+from game import new_game, load_game
 import unittest
 
 #Creates interactive Map object Bed
@@ -180,6 +181,7 @@ class TestPlayer(unittest.TestCase):
     def setUp(self):
         self.p1 = player()
         self.l1 = location(home,1,1)
+        self.e1 = enemy(1)
 
     # Some attributes have already been tested in super class Character
     def test1(self):
@@ -196,14 +198,100 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(self.p1.story_tracker, 1)
 
     def test2(self):
-        # Test interact method
-        self.assertEqual(self.p1.interact("storyCharacter","PARNT"),0)
-        self.assertEqual(self.p1.interact("bed","HTLB2"),1)
-        self.assertEqual(self.p1.interact("shop","SHOP1"),2)
+        # Test interact method 
+        for chara in all_story_characters:
+            self.assertEqual(self.p1.interact("storyCharacter",chara.key),0)
+        for bd in all_beds:
+            self.assertEqual(self.p1.interact("bed",bd.key),1)
+        for shp in all_shops:
+            self.assertEqual(self.p1.interact("shop",shp.key),2)
         
+    def test3(self):
+        # Test Battle Method
+        self.assertNotEqual(self.p1.battle(self.e1),None)
 
+    def test4(self):
+        self.assertTrue(self.p1.limiter("2TOWN"))
+        self.assertTrue(self.p1.limiter("3TOWN"))
+        self.assertTrue(self.p1.limiter("4TOWN"))
+        self.assertTrue(self.p1.limiter("asdas")) # test random placeholder
+    
+    def test5(self):
+        # Test Savegame method
+        self.assertTrue(self.p1.savegame())
+        
+    def test6(self):
+        # Test death Method
+        self.p1.HP = 0
+        self.p1.death()
+        self.assertEqual(self.p1.HP, self.p1.max_HP)
 
+    def test7(self):
+        # Test exp gain
+        x = self.p1.EXP
+        y = self.p1.level
+        self.e2 = enemy(100)
+        self.p1.exp_gain(self.e2)
+        self.assertGreater(self.p1.EXP,x)
+        self.assertEqual(self.p1.level, y + 1)
 
+    def test8(self):
+        # Test Use Item
+        self.assertTrue(self.p1.use_item("health potion"))
+        self.assertTrue(self.p1.use_item("heAltH poTion"))
+        self.assertFalse(self.p1.use_item("basic sword"))
+        self.assertFalse(self.p1.use_item("basIc swOrD"))
+        self.assertFalse(self.p1.use_item("asjdaulfjsn"))
+
+    def test9(self):
+        # Test Remove Item
+        self.assertFalse(self.p1.remove_item(magic_pot))
+        self.p1.add_item(basic_shield)
+        self.assertTrue(self.p1.remove_item(basic_shield))
+
+    def test10(self):
+        # Test add_item
+        self.assertTrue(self.p1.add_item(basic_shield))
+        self.assertFalse(self.p1.add_item(basic_shield))
+        self.assertFalse(self.p1.add_item(royal_shield))
+        self.assertTrue(self.p1.add_item(hp_pot))
+        self.assertTrue(self.p1.add_item(hp_pot))
+        self.assertEqual(self.p1.items[hp_pot],2)
+    
+    def test11(self):
+        # Test world map enemies
+        self.assertTrue(self.p1.world_map_enemies(enemy(1), enemy(2), enemy(3)))
+
+    def test12(self):
+        # Test map enemies
+        self.assertTrue(self.p1.map_enemies(10))
+        self.assertTrue(self.p1.map_enemies(20))
+        self.assertTrue(self.p1.map_enemies(30))
+        
+    def test13(self):
+        self.assertTrue(self.p1.left())
+        self.assertTrue(self.p1.up())
+        self.assertTrue(self.p1.down())
+        self.assertTrue(self.p1.right())
+
+    
+class Test_New_game(unittest.TestCase):
+
+    def setUp(self):
+        self.g1 = new_game("test")
+    
+    def test1(self):
+        self.assertEqual(self.g1.user.name,"test")
+        self.assertEqual(self.g1.user.gold, 150)
+
+class Test_load_game(unittest.TestCase):
+
+    def setUp(self):
+        self.g1 = load_game("no name")
+    
+    def test1(self):
+        self.assertEqual(self.g1.user.current_location.row, 2)
+        self.assertEqual(self.g1.user.current_location.col, 2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,14 +1,17 @@
 from character import character # Inheritence
-from items import pot, weapon, shield, armour ,all_items # To check bag for duplicate items
-from fight import fight # To enage in battle
-from enemy import enemies, a1, a2, a3, b1, b2, b3, c1, c2, c3, d1, d2, d3, e1, e2, e3,boss # For random battles accross map
+from items import pot, weapon, shield, armour ,all_items, boat # To check bag for duplicate items
+from enemy import enemy, names # For random battles accross map
 from random import random
 from location import location # To set initial location
 from Map import home # To set intitial location
-
-
-
-
+from story_character import all_story_characters
+from shops import all_shops # To find correct shop in shop algorithm
+from bed import all_beds # To find correct bed in bed algorithm
+from Map import all_maps
+from gui import printer as p
+from gui import warning as w
+from gui import printer_frame5 as pf5
+from gui import switch_battle_mode as sbm
 
 class player(character):
     """
@@ -35,15 +38,21 @@ class player(character):
     :type gold: int
     :param items: Items carried by user (default = {})
     :type items: dictionary
+    :param story_tracker: Numeric value that represents stages in game progression
+    :type story_tracker: int
 
     Methods
     -------
-    show_stats()
-        Prints user stats to the console along with contents of user bag
+    interact()
+        Logic behind interactions with "objects" on map
+    battle()
+        Fight between player and an opponent
+    limiter(placeholder)
+        Limits access based on story tracker to force progression of story in correct order
     savegame()
         Creates a savegame txt 
     death()
-        Resets location to last_save_location and HP to max_HP
+        Resets location to last_save_location and HP to max_HP and deducts 10% gold
     exp_gain()
         Adds EXP based on enemy and if EXP meets level up requirements, levels up user
     use_item()
@@ -66,7 +75,7 @@ class player(character):
         moves user location down or interacts with something in the down position
 
     """
-    def __init__(self,current_location = location(home,1,1),last_save_location = location(home,1,1),level = 1, name = "No Name", EXP = 0,exp_needed=500, gold = 0, items = {}):
+    def __init__(self,current_location = location(home,1,1),last_save_location = location(home,1,1),level = 1, name = "No Name", EXP = 0,exp_needed=500, gold = 0, items = {}, story_tracker = 1):
         """
         Constructor
         ...
@@ -98,25 +107,195 @@ class player(character):
         self.HP = 500 + self.level*200 # HP increases 200 per level
         self.max_HP = 500 + self.level*200
         self.AD = self.level*50  # AD increases 50 per level
-    
+        self.story_tracker = story_tracker #Tracks story and allows for starting game at various points in story
 
-
-    #########################################################  SHOW STATS  ##################################################################################
-    def show_stats(self):
+    ######################################################### INTERACTIONS ###############################################################
+    def interact(self,typ,placeholder):
         """
-        Prints user stats to the console along with contents of user bag
-        """
-        print(f"""\nName : {self.name} \nLevel: {self.level} \nAD: {self.AD} \nHP: {self.HP} \nMAX HP: {self.max_HP} \nEXP for level up: {self.exp_needed} \nGold: {self.gold}
-        \n...\n\nIn your bag:\n""") #prints(user stats)
-        for item in self.items.keys(): # Prints items and quantities
-            print(f"{item.name} x {self.items[item]}")
+        Logic behind interactions with "objects" on map
+        ...
 
+        Paramters
+        ---------
+        :param typ: Informs what type of object user is interacting with 
+        :type typ: str
+        :param palceholder: 2nd part of tuple from matrix on a map
+        :type placeholder: str
+
+        Return
+        ------
+        :return int: interger value based on typ to confirm completion 
+        :type int: int
+        """
+        if typ == "storyCharacter":
+            for character in all_story_characters:
+                if placeholder == character.key:
+                    p(f"{character.name}:") ############################************************************* fix this TODO
+                    character.interact(self)
+            return 0
+
+        elif typ == "bed":
+            for bed in all_beds: # Determine which bed using bed keys and given key
+                if bed.key == placeholder:
+                    x = "no" # User confirmation
+                    if x.lower() == "yes": # Lowercase to avoid captil letter errors
+                        if self.gold > bed.cost: # Given user has enough gold (incase of hotel)
+                            self.gold -= bed.cost # Deducts gold cost
+                            self.HP = self.max_HP # Resets HP
+                            self.savegame() # Saves game
+                            p("The game has been saved")
+                        else:
+                            p("You have insufficient gold")
+                    elif x.lower() == "no": # If user chooses no, allow user back to map
+                        pass
+                    else:
+                        p("Invalid input") # Any other inputs are met with this error message
+            return 1
+
+        elif typ == "shop":
+            for shop in all_shops: # To determine which items to display search for shop in all shops
+                if shop.key == placeholder: # Once found, print list of available items
+                    str1 = "Welcome,  we have: "
+                    for i in shop.available_items:
+                        str1 += f"\n{i.name} for {i.value} gold"
+                    x = "exit" # Ask user for purchase
+                    if x == "exit": # if user changes mind
+                        break
+                    else:
+                        temp = None # Need to initiate variable outside loop, set to None for convienence
+                        for i in shop.available_items:
+                            if i.name.lower() == x.lower(): # puts all letters into lowercase to avoid captial letter errors
+                                temp = i
+                        if temp != None: # If temp has been assigned a new value
+                            if self.gold > temp.value: # if player has enough gold
+                                try:
+                                    item_added = self.add_item(temp)
+                                    if item_added == True:
+                                        self.gold -= temp.value
+                                except:
+                                    pass
+                                    #w("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
+                            else:
+                                p("insufficient gold")
+                        else:
+                            p("Invalid input, please try again")
+            return 2
+
+    ########################################################  FIGHT  ##############################################################################################
+    def battle(self, opponent):
+        """
+        Fight between player and an opponent
+        ...
+
+        Parameters
+        ----------
+        :param opponent: enemy for user to fight
+        :param type: enemy.character
+
+        Return
+        ------
+        :param winner: Name of the winner of the battle
+        :type winner: str
+        """
+        sbm(True) # Tell gui to switch to battle mode on
+        winner = None  # Set winner equal to None, incase player decides to run away
+        #w(f"{opponent.name} attacks...")
+        while winner == None:   # When a new winner is set the battle is over 
+            opponent.attack(self) # Since enemies suprise the player, they get to attack first
+            if self.HP <= 0: # Check if somone has won 
+                winner = opponent.name
+                p(f"{self.name} has been defeated.")
+                break
+            next_move = "1"
+            if next_move == "1": # If user chooses to retaliate
+                self.attack(opponent)
+                if opponent.HP <= 0: # Check if somone has won
+                    winner = self.name
+                    p(f"{opponent.name} has been defeated.")
+            elif next_move == "2": # If user chooses to use an item
+                item_selected = False # To ensure an item is actually selected and to loop around if it is not
+                while item_selected == False:
+                    # Item selection or exit
+                    x = "exit"
+                    if x == "exit":
+                        item_selected = True
+                    else:
+                        outcome = self.use_item(x)
+                        if outcome == True:
+                            item_selected = True
+                            #w(f"{x} was used")
+                        else:
+                            #w("Invalid Input")
+                            pass
+            elif next_move == "3": # If user chooses to try and run away
+                value = random() # Generate float between 0 and 1
+                if value > 0.75: # To make it a 25% chance of success
+                    p("You got away")
+                    winner = "No winner"
+                else:
+                    p("You got blocked")
+            else: # If entry was invalid
+                #w("Invalid entry, while you were choosing your were attacked....")
+                pass
+        if self.name == winner: # If user has won
+            for i in opponent.items:
+                self.add_item(i)
+            self.gold += opponent.gold # Steal enemies gold
+            self.exp_gain(opponent) # Gain experinece points
+            p(f"{self.name} wins..... {self.name} loot {opponent.gold} and {opponent.items}")
+        elif opponent.name == winner: # If user has been killed
+            p("You will be taken to your last save location")
+            self.death()
+        
+        # To clear frame5
+        pf5("",0)
+        pf5("",1)
+        sbm(False) # Tell gui to switch back to battle mode false
+        return winner
+
+
+
+
+
+    ######################################################## LEVEL BASED MAP LIMITER ############################################################
+    def limiter(self,placeholder):
+        """
+        Limits access based on story tracker to force progression of story in correct order
+        ...
+
+        Parameters
+        ----------
+        :param placeholder: key of a map
+        :type placeholder: str
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: bool
+        """
+        x = self.story_tracker
+
+        if x < 4 and placeholder in ['2TOWN','TOWER','3TOWN','4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        elif x < 7 and placeholder in ['3TOWN','4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        elif x < 8 and placeholder in ['4TOWN','2CAVE']:
+            p("You cannot go here yet...")
+        else:
+            self.current_location.changemap(placeholder)
+
+        return True
 
 
     #########################################################  SAVEGAME  ####################################################################################
     def savegame(self):
         """
         Creates a savegame txt 
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bools
         """
         x = self.name.lower() + ".txt" # create var string with name of user and txt at end
         things = [] # to store item keys
@@ -125,20 +304,21 @@ class player(character):
             things.append(i.key)
             amount.append(j)
         with open(x, 'w') as f: # Opens file x and writes or overwrites data
-            f.write(f"{self.name}\n{self.level}\n{self.gold}\n{things}\n{amount}\n{self.current_location.map.key}\n{self.current_location.row}\n{self.current_location.col}\n{self.EXP}\n{self.exp_needed}")
+            f.write(f"{self.name}\n{self.level}\n{self.gold}\n{things}\n{amount}\n{self.current_location.map.key}\n{self.current_location.row}\n{self.current_location.col}\n{self.EXP}\n{self.exp_needed}\n{self.story_tracker}")
         self.last_save_location = location(self.current_location.map, self.current_location.row, self.current_location.col) # Changes last save location
 
-
+        return True
     
     #########################################################  DEATH  ###########################################################################################
     def death(self):
         """
-        Resets location to last_save_location and HP to max_HP
+        Resets location to last_save_location and HP to max_HP and deducts 10% gold
         """
         self.current_location = location(self.last_save_location.map, self.last_save_location.row, self.last_save_location.col) # Reset location
         self.HP = self.max_HP # Reset HP
+        self.gold = int(self.gold*0.9)  # Lose 10% gold each time you die
 
-    
+
 
     #########################################################  LEVEL UP  #####################################################################################
     def exp_gain(self, opponent):
@@ -154,8 +334,8 @@ class player(character):
         self.EXP += opponent.EXP_given # Add EXP
         if self.EXP > self.exp_needed: # If EXP meets requirements LEVEL UP
             self.level += 1
-            self.exp_needed = int(self.exp_needed + self.exp_needed*1.1)
-            print(f"{self.name} just leveled up to Level {self.level}!!")
+            self.exp_needed = int(self.exp_needed + 500*(1.1**self.level))
+            #w(f"{self.name} just leveled up to Level {self.level}!!")
     
 
 
@@ -182,7 +362,10 @@ class player(character):
             if i.name.lower() == x.lower(): # lower case to avoid captial letter errors
                 if type(i) == pot: # can only be used if item is a pot
                     temp = i
-                    i.use(self)
+                    if self.HP + i.regen < self.max_HP:
+                        self.HP += i.regen
+                    else:
+                        self.HP = self.max_HP
                     used = True
         try:
             if self.items[temp] > 1: # if the above was successfull temp will now be assigned otherwise this will have an error and except will run
@@ -212,8 +395,10 @@ class player(character):
         :return response: response based on whether function was successfull or not
         :type response: str
         """
+        removed = False
         if item not in self.items: # If item is not in dict bag
-            response = f"You do not have {item} in inventory"
+            #w(f"You do not have {item} in inventory")
+            pass
         else:
             del self.items[item]
             if type(item) == weapon: # if item is of type weapon, associated ad must be removed
@@ -221,9 +406,10 @@ class player(character):
             elif type(item) == shield or type(item) == armour: # if item is of time shield or armour, associated HP must be removed
                 self.HP -= item.HP
                 self.max_HP -= item.HP
-            response = f"{item} has been removed from inventory"
+            #w(f"{item} has been removed from inventory")
+            removed = True
 
-        return response
+        return removed
 
 
 
@@ -253,25 +439,23 @@ class player(character):
             if x == pot: # if it is a pot then player can have more than 1 otherwise is limited
                 self.items[item] += 1
                 item_added = True
-                print(f"You now have another {item.name}")
+                p(f"You now have another {item.name}")
             elif x == weapon or x == shield or x == armour:
-                print("You already have one")
+                p("You already have one")
         else: # If it is not already in bag
             if x == pot: # New pot 
                 self.items[item] = 1
                 item_added = True
-                print(f"{item.name} has been added to your inventory")
+                #w(f"{item.name} has been added to your inventory")
             else:
                 if x in contents: # if it is not a pot then matching types cannot be bough until an old one is gotten rid off
-                    print(f"Please get rid of your old weapon/shield/armour before purchasing a new one")
-                    removal = input("Would you like to get rid of an item? (yes/no)") # Allow user to delete old item
+                    removal = p("Please get rid of your old weapon/shield/armour before purchasing a new one \nWould you like to get rid of an item? (yes/no)",inp=True) # Allow user to delete old item
                     if removal.lower() == "yes":
-                        self.show_stats() # Show items for user 
-                        to_be_removed = input("What item would you like removed? (Enter name)") # Find item to be deleted
+                        to_be_removed = p("What item would you like removed? (Enter name)",inp=True) # Find item to be deleted
                         for i in all_items:
                             if i.name.lower() == to_be_removed.lower():
                                 self.remove_item(i)
-                                print("Item was removed") # If it was removed then this message will display
+                                p("Item was removed") # If it was removed then this message will display
                 else:
                     self.items[item] = 1 # If it is not in bag or same type isnt in bag, simply add 1 unit to bag
                     item_added = True
@@ -280,7 +464,7 @@ class player(character):
                     elif type(item) == shield or type(item) == armour:
                         self.HP += item.HP # Scale hp based on items
                         self.max_HP += item.HP
-                    print(f"{item.name} has been added to your inventory")
+                    #w(f"{item.name} has been added to your inventory")
         
         return item_added
 
@@ -301,22 +485,24 @@ class player(character):
         :type b: enemy.character
         :param c: least common enemy
         :type c: enemy.character
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         rand_flt = random() # Generate a random uniform float number between 0 and 1 
         if rand_flt < 0.7: # 70% probability of occurance
-            opponent = a()
-            this_fight = fight() # Create fight object
-            this_fight.full_battle(self, opponent) # engage in battle
+            opponent = a
+            self.battle(opponent)
         elif rand_flt > 0.7 and rand_flt < 0.95: # 25% probability of occurance
-            opponent = b()
-            this_fight = fight()
-            this_fight.full_battle(self, opponent)
+            opponent = b
+            self.battle(opponent)
         else: #5% probability of occurance
-            opponent = c()
-            this_fight = fight()
-            this_fight.full_battle(self, opponent)
+            opponent = c
+            self.battle(opponent)
 
-            
+        return True
 
 
 
@@ -329,44 +515,60 @@ class player(character):
         ----------
         :param val: numeric element from map matrix, decides possible interactions
         :type val: int
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         flt = random() # Random number to decide how often a random battle should occur
-        if flt < 0:
+        if flt < 0.3:
             if val == 26: # Set regions have varying levels of difficulty in terms of enemies
-                self.world_map_enemies(a1,a2,a3)
+                self.world_map_enemies(enemy(level=1,name=names[1]),enemy(level=2,name =names[2]),enemy(level=3,name =names[3]))
             elif val == 27:
-                self.world_map_enemies(b1,b2,b3)
+                self.world_map_enemies(enemy(level=4,name =names[4]),enemy(level=5,name =names[5]),enemy(level=6,name =names[6]))
             elif val == 28:
-                self.world_map_enemies(c1,c2,c3)
+                self.world_map_enemies(enemy(level=7,name =names[7]),enemy(level=8,name =names[8]),enemy(level=9,name =names[9]))
             elif val == 29:
-                self.world_map_enemies(d1,d2,d3)
+                self.world_map_enemies(enemy(level=10,name =names[10]),enemy(level=11,name =names[11]),enemy(level=12,name =names[12]))
             elif val == 30:
-                self.world_map_enemies(e1,e2,e3)
+                self.world_map_enemies(enemy(level=13,name =names[13]),enemy(level=14,name =names[14]),enemy(level=15,name =names[15]))
+            elif val == 10:
+                pass
             else: # If battle is not on world map then use enemies dict. to find right strength enemy
-                for num,opp in enemies.items():
-                    if val == num:
-                        opponent = opp()
-                        this_fight = fight()
-                        this_fight.full_battle(self, opponent)
+                opponent = enemy(level=val-10,name=names[val-10])
+                self.battle(opponent)
 
-
+        return True
 
     #########################################################  MOVEMENT  #############################################################################
     def left(self):
         """
         moves user location to left or interacts with something in the left position
+        ...
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         val = self.current_location.map.matrix[self.current_location.row][self.current_location.col-1][0] # Stores numeric element of tuple
         placeholder = self.current_location.map.matrix[self.current_location.row][self.current_location.col-1][1] # stores key element of tuple
         if val < 31: # for battles and general movement
             self.map_enemies(val)
             self.current_location.col -= 1
-        elif val == 50: # To enter a door to another map
-            self.current_location.changemap(placeholder)
+        elif val == 50: # To enter a door to another map limited by storyline
+            self.limiter(placeholder)
         elif val == 40: # To interact with a shop
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90: # To interact with a bed
-            self.current_location.bed(self,placeholder)
+            self.interact("bed", placeholder)
+        elif val == 80: # To interact with a story character
+            self.interact("storyCharacter",placeholder)
+        elif val == 70: # To get across river
+            if boat in self.items:
+                self.current_location.col -= 1
+        return True
            
 
 
@@ -374,6 +576,12 @@ class player(character):
     def right(self):
         """
         moves user location to right or interacts with something in the right position
+        ...
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         val = self.current_location.map.matrix[self.current_location.row][self.current_location.col+1][0]
         placeholder = self.current_location.map.matrix[self.current_location.row][self.current_location.col+1][1]
@@ -381,17 +589,28 @@ class player(character):
             self.map_enemies(val)
             self.current_location.col += 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
-          
+            self.interact("bed", placeholder)
+        elif val == 80:
+            self.interact("storyCharacter",placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.col += 1
+        return True
 
 
     def up(self):
         """
         moves user location up or interacts with something in the up position
+        ...
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         val = self.current_location.map.matrix[self.current_location.row - 1][self.current_location.col][0]
         placeholder = self.current_location.map.matrix[self.current_location.row - 1][self.current_location.col][1]
@@ -399,17 +618,28 @@ class player(character):
             self.map_enemies(val)
             self.current_location.row -= 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
-          
+            self.interact("bed", placeholder)
+        elif val == 80:
+            self.interact("storyCharacter",placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.row -= 1
+        return True
 
 
     def down(self):
         """
         moves user location down or interacts with something in the down position
+        ...
+
+        Return
+        ------
+        :return True: To inform completion without error
+        :type True: Bool
         """
         val = self.current_location.map.matrix[self.current_location.row + 1][self.current_location.col][0]
         placeholder = self.current_location.map.matrix[self.current_location.row + 1][self.current_location.col][1]
@@ -417,9 +647,14 @@ class player(character):
             self.map_enemies(val)
             self.current_location.row += 1
         elif val == 50:
-            self.current_location.changemap(placeholder)
+            self.limiter(placeholder)
         elif val == 40:
-            self.current_location.shop(self,placeholder)
+            self.interact("shop", placeholder)
         elif val == 90:
-            self.current_location.bed(self,placeholder)
-          
+            self.interact("bed", placeholder)
+        elif val == 80:
+            self.interact("storyCharacter",placeholder)
+        elif val == 70: 
+            if boat in self.items:
+                self.current_location.row += 1
+        return True

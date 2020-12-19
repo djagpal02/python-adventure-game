@@ -14,13 +14,6 @@ class shop:
     :type key: str
     :param available_items: Items the shop sells
     :type available_items: list
-    
-    Methods
-    -------
-    display_items()
-        Prints list of available items and price to console
-    purchase(player,x)
-        Matches user input to an item and attempts user purchase
     """
 
 
@@ -40,48 +33,6 @@ class shop:
         self.key = key
         self.available_items = available_items
 
-
-
-    def display_items(self):
-        """
-        Prints list of available items and price to console
-        """
-        print("At this shop we have: ")
-        for item in self.available_items:
-            print(f"{item.name} for {item.value} gold")
-
-
-
-    def purchase(self,player, x):
-        """
-        Matches user input to an item and attempts user purchase
-
-        Loops through all item key list to match user input to an item and if possible purchases 
-        ...
-
-        Parameters
-        ----------
-        :param player: users character
-        :type player: player.character
-        :param x: user input
-        :type x: str
-        """
-        temp = None # Need to initiate variable outside loop, set to None for convienence
-        for i in self.available_items:
-            if i.name.lower() == x.lower(): # puts all letters into lowercase to avoid captial letter errors
-                temp = i
-        if temp != None: # If temp has been assigned a new value
-            if player.gold > temp.value: # if player has enough gold
-                try:
-                    item_added = player.add_item(temp)
-                    if item_added == True:
-                        player.gold -= temp.value
-                except:
-                    print("You can not have more than one, sword, shield or armour") # Error from player.add_item is due to multiple of same type of item
-            else:
-                print("insufficient gold")
-        else:
-            print("Invalid input, please try again")
 
 
 
