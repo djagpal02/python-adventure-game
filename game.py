@@ -3,34 +3,9 @@ from location import location # To give position to player on loading old game#
 from Map import all_maps # To find current map when loading old game
 from items import all_items# To recreate items dictionary from string
 
-class new_game:
+class game:
     """
-    A class to intiate a new game, type of game
-    ...
-
-    Arguments
-    ---------
-    :param name: Name of user
-    :type name: str
-    """
-    def __init__(self,name):
-        """
-        Constructor
-        ...
-
-        Parameters
-        ----------
-        :param name: Name of user
-        :type name: str
-        """
-        self.user = player(level=1, name = name, EXP=0, gold= 150, items ={})
-
-
-
-
-class load_game:
-    """
-    A class to load up an old game via user data
+    A class to represent a game
     ...
 
     Arguments
@@ -43,7 +18,7 @@ class load_game:
     get_items()
         A function to turn 2 input lists into a dictionary
     """
-    def __init__(self,name):
+    def __init__(self,name,new):
         """
         Constructor
 
@@ -52,42 +27,47 @@ class load_game:
         
         Parameters
         ----------
-        :param user: the useres ingame character
-        :type user: player.character
+        :param name: Name of user
+        :type name: str
+        :param new: if the game is a new or must be loaded
+        :type new: Bool
         """
-        x = name.lower() + ".txt" # create string with name matching one used to create savegames
-        with open(x, 'r') as f: # open file in read mode and parse through lines in same order as data was stored
-            name = f.readline().rstrip('\n') # strip of \n
-            level = int(f.readline()) # turn strings into int
-            gold = int(f.readline())
-            items_keys = f.readline()
-            item_am = f.readline()
-            cl_map = f.readline().rstrip('\n')
-            cl_row = int(f.readline())
-            cl_col = int(f.readline())
-            exp = int(f.readline())
-            exp_n = int(f.readline())
-            st = int(f.readline())
-        curr_map = None # emptry var to be assigned current map
-        for i in all_maps:
-            if i.key == cl_map:
-                curr_map = i
+        if new == True:
+            self.user = player(level=1, name = name, EXP=0, gold= 150, items ={})
+        else:
+            x = name.lower() + ".txt" # create string with name matching one used to create savegames
+            with open(x, 'r') as f: # open file in read mode and parse through lines in same order as data was stored
+                name = f.readline().rstrip('\n') # strip of \n
+                level = int(f.readline()) # turn strings into int
+                gold = int(f.readline())
+                items_keys = f.readline()
+                item_am = f.readline()
+                cl_map = f.readline().rstrip('\n')
+                cl_row = int(f.readline())
+                cl_col = int(f.readline())
+                exp = int(f.readline())
+                exp_n = int(f.readline())
+                st = int(f.readline())
+            curr_map = None # emptry var to be assigned current map
+            for i in all_maps:
+                if i.key == cl_map:
+                    curr_map = i
 
-        non_pot_items = []        # items that are not pots
-        try:
-            bag = self.get_items(items_keys,item_am) # bag containing all items
-            for i in bag:
-                if i.key != "hpo" and i.key != "mpo" and i.key != "upo":# if itst not a pot then remove from bag and add via add_item method to ensure stats are updated
-                    non_pot_items.append(i)
+            non_pot_items = []        # items that are not pots
+            try:
+                bag = self.get_items(items_keys,item_am) # bag containing all items
+                for i in bag:
+                    if i.key != "hpo" and i.key != "mpo" and i.key != "upo":# if itst not a pot then remove from bag and add via add_item method to ensure stats are updated
+                        non_pot_items.append(i)
+                for i in non_pot_items:
+                    del bag[i]
+            except:
+                bag = {}
+            user1 = player(location(curr_map,cl_row,cl_col),location(curr_map,cl_row,cl_col), level,name,exp,exp_n,gold, bag,st)
             for i in non_pot_items:
-                del bag[i]
-        except:
-            bag = {}
-        user1 = player(location(curr_map,cl_row,cl_col),location(curr_map,cl_row,cl_col), level,name,exp,exp_n,gold, bag,st)
-        for i in non_pot_items:
-            user1.add_item(i)
+                user1.add_item(i)
 
-        self.user = user1
+            self.user = user1
 
     def get_items(self,x, q):
         """

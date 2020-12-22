@@ -1,5 +1,5 @@
 from player import player
-from game import new_game, load_game
+from game import game
 from textui import Textui
 from gui import myApp,win,printer
 from gui import warning as w
@@ -21,15 +21,15 @@ def startgame(App):
     """
     x = App.username # Pull name data from entry field
     if App.gametype.get() == 0: # Data from radio buttons - load vs new game
-        t_game = new_game(x)
+        t_game = game(x,new=True)
     elif App.gametype.get() == 1:
         try:
-            t_game = load_game(x)
+            t_game = game(x,new=False)
         except:
             w("Unable to find user data, will load a new game...")
-            t_game = new_game(x)
+            t_game = game(x,new=True)
     else:
-        t_game = new_game(x)
+        t_game = game(x,new=True)
     return t_game
 
 def movement(move,textui,this_game,myApp=myApp):
