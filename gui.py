@@ -4,7 +4,42 @@ from PIL import ImageTk, Image
 import time
 
 class grid_element:
+    """
+    A class to represent an element of the tkinter grid
+    ...
+
+    Arguments
+    ---------
+    :param row: row on full grid
+    :type row: int
+    :param col: column on full grid
+    :type col: int
+    :param label: Tkinter label object with black 25x25 square
+    :type label: Tkinter.Label
+    :param tens_mapping: Translated position for 10x10 Map
+    :type tens_mapping: tuple
+    :param sevens_mapping: Translated position for 7x7 Map
+    :type sevens_mapping: tuple
+    """
     def __init__(self,row,col, label, tens, sevens):
+        """
+        Constructor
+        ...
+
+        Parameters
+        ----------
+        :param row: row on full grid
+        :type row: int
+        :param col: column on full grid
+        :type col: int
+        :param label: Tkinter label object with black 25x25 square
+        :type label: Tkinter.Label
+        :param tens_mapping: Translated position for 10x10 Map
+        :type tens_mapping: tuple
+        :param sevens_mapping: Translated position for 7x7 Map
+        :type sevens_mapping: tuple        
+
+        """
         self.row = row 
         self.col = col
         self.name = 'img' + str(self.row) + str(self.col)
@@ -84,7 +119,6 @@ class App():
         # Button and Entry Box for inputs
         self.entry = tk.Entry(self.frame2)
         self.enter_two = tk.Button(self.frame2,text = "enter", command = self.pull)
-        self.enter_three = tk.Button(self.frame2,text = "enter2", command = self.pull2())
 
         # Create grid_element objects
         for i in range(22):
@@ -179,6 +213,9 @@ class App():
     #############################################################################################################################################
 
     def intro(self):
+        """
+        Load game and remove intro information
+        """
         self.username = self.entryIntro.get()
         self.entryIntro.destroy()
         self.enter.destroy()
@@ -188,31 +225,73 @@ class App():
         self.contin_switch()
         
     def pull(self):
+        """
+        Changes num var to allow gui to continue 
+        """
         self.num.set(1)
-        
-    def pull2(self):
-        self.contin = True
-        self.num2.set(1)
 
     def change_image(self,label,img):
+        """
+        Changes image of label with given image
+        ...
+
+        Parameters
+        ----------
+        :param label: gui label
+        :type label: Tkinter Label
+        :param img: image stored within class
+        :type img: tkinter image
+        """
         label.configure(image=img)
         label.image = img
     
     def new_msg(self,message):
+        """
+        Prints new message to frame and freezes gui by setting contin = False
+        ...
+
+        Parameters
+        ----------
+        :param message: New message to be printed
+        :type message: str
+        """
         self.label1.configure(text=message)
         self.contin = False
     
     def new_msg_f5(self,message,row_num):
+        """
+        Prints new message to frame 5
+        ...
+
+        Parameters
+        ----------
+        :param message: new message to be printed
+        :type message: str
+        :param row_num: 0 or 1 to determine if it will print to the 0 or 1st row
+        :type row_num: int
+        """
         if row_num == 0:
             self.fightinfo.configure(text=message)
         elif row_num == 1:
             self.fightinfo_row1.configure(text=message)
 
     def new_warning(self,msg):
+        """
+        Creates a message box with given message
+        ...
+
+        Parameters
+        ----------
+        :param msg: new message to be printed
+        :type msg: str
+        """
         messagebox.showinfo(title="Info", message=msg)
             
     
     def contin_switch(self):
+        """
+        Allows user to move again after being frozen most likely do to a print message
+        """
         self.label1.configure(text='')
         self.contin = True
     
@@ -221,6 +300,9 @@ class App():
     
 
     def battle_mode_changes(self):
+        """
+        Adds a image of crossed swords if battle mode is True
+        """
         if self.battle_mode == True:
             self.csl.grid(row = 100) # Add crossed sword image
 
@@ -232,6 +314,18 @@ class App():
 
     
     def map_keys(self,label,plc):
+        """
+        Prints correct image for different keys in map matrices
+        ...
+
+        Parameters
+        ----------
+        :param label: gui label
+        :type label: Tkinter Label
+        :param plc: key from matrix tuple
+        :type plc: str
+
+        """
         if plc == '-WALL':
             self.change_image(label,self.img2)
         elif plc == '#####':
@@ -253,6 +347,15 @@ class App():
 
     # Prints map, organization varies based on size of current map
     def show_map2(self,game):
+        """
+        Gets player information from game object, user location, and prints a map on gui
+        ...
+
+        Parameters
+        ----------
+        :param game: the game data for the user
+        :type game: game object
+        """
         size = len(game.user.current_location.map.matrix)
         x = game.user.current_location.row
         y = game.user.current_location.col
@@ -295,6 +398,15 @@ class App():
         
 
     def show_stats(self,game):
+        """
+        Gets player information from game object, user stats, and prints to gui
+        ...
+
+        Parameters
+        ----------
+        :param game: the game data for the user
+        :type game: game object
+        """
         self.stats.configure(text = f"Name:  {game.user.name}\nLevel:  {game.user.level} \nAD: {game.user.AD} \nHP:  {game.user.HP}\nMAX HP:  {game.user.max_HP} \nEXP:  {game.user.EXP} \nEXP FOR NEXT LEVEL:  {game.user.exp_needed} \nGOLD:  {game.user.gold}")
         strng = "In your bag:"
         for item in game.user.items.keys():
@@ -314,6 +426,19 @@ global myApp
 myApp = App(win)
 
 def printer(message,app=myApp,inp=False):
+    """
+    Function to print to gui and wait for response, also allows for inputs
+    ...
+
+    Parameters
+    ----------
+    :param message: new message to be printed
+    :type message: str
+    :param app: tkinter app
+    :type app: tkinter app
+    :param inp: To inform if an input  is needed
+    :type inp: Bool
+    """
     app.new_msg(message)
     if inp == True:
         app.entry.grid(row = 5)
@@ -326,11 +451,46 @@ def printer(message,app=myApp,inp=False):
         return myApp.inp
 
 def warning(message,app=myApp):
+    """
+    Function to create a messagebox 
+    ...
+
+    Parameters
+    ----------
+    :param message: new message to be printed
+    :type message: str
+    :param app: tkinter app
+    :type app: tkinter app
+    """
     app.new_warning(message)
 
 def printer_frame5(message,row_num, app=myApp,):
+    """
+    Function to frame 5 of gui
+    ...
+
+    Parameters
+    ----------
+    :param message: new message to be printed
+    :type message: str
+    :param row_num: 0 or 1 to determine if it will print to the 0 or 1st row
+    :type row_num: int
+    :param app: tkinter app
+    :type app: tkinter app
+    """
     app.new_msg_f5(message,row_num)
 
 def switch_battle_mode(x,app=myApp):
+    """
+    Function to switch between battle mode true and false and apply relavent changes to gui
+    ...
+
+    Parameters
+    ----------
+    :param x: True or false to tell gui if battle mode is on or not
+    :type x: Bool
+    :param app: tkinter app
+    :type app: tkinter app
+    """
     app.battle_mode = x
     app.battle_mode_changes()

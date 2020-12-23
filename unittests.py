@@ -7,7 +7,7 @@ from shops import shop, all_shops
 from location import location
 from story_character import story_character, all_story_characters
 from player import player
-from game import new_game, load_game
+from game import game
 import unittest
 
 #Creates interactive Map object Bed
@@ -275,23 +275,22 @@ class TestPlayer(unittest.TestCase):
         self.assertTrue(self.p1.right())
 
     
-class Test_New_game(unittest.TestCase):
+
+class TestGame(unittest.TestCase):
 
     def setUp(self):
-        self.g1 = new_game("test")
+        self.g1 = game("No Name",new=False)
+        self.g2 = game("test",new=True)
     
     def test1(self):
-        self.assertEqual(self.g1.user.name,"test")
-        self.assertEqual(self.g1.user.gold, 150)
-
-class Test_load_game(unittest.TestCase):
-
-    def setUp(self):
-        self.g1 = load_game("no name")
-    
-    def test1(self):
+        # Test loadgame
         self.assertEqual(self.g1.user.current_location.row, 2)
         self.assertEqual(self.g1.user.current_location.col, 2)
+    
+    def test2(self):
+        # Test new game
+        self.assertEqual(self.g2.user.name,"test")
+        self.assertEqual(self.g2.user.gold, 150)
 
 if __name__ == '__main__':
     unittest.main()

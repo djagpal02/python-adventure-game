@@ -1,4 +1,3 @@
-from player import player
 from game import game
 from textui import Textui
 from gui import myApp,win,printer
