@@ -4,6 +4,10 @@
 
 Pixel adventure is a 2D adventure game that takes the user through a story of saving the world, while battling many monsters. The game uses simple turn based battles to allow the user to defeat enemies. The user can do this to gain experience, level up, gain gold and complete missions. Enemies get stronger as the story progresses but the user also has the opportunity to get stronger via leveling up and purchasing items. Each level up comes with a boost in user AD (Attack Damage) and HP (Hit Points). Items serve many functions; some are nessesary for entering particular areas, some give health boosts while in battle and others provide AD or HP boosts. Furthermore, Locations you can visit are locked based on story completion to encourage following the story. Since this game is unlikely to be finished in once sitting, the user has an option to save the game by visiting a bed. This save game can be restored from the start menu and can also be edited manually to change user profile by editing the users txt file. 
 
+## Running the Program
+
+The program was developed in visual studio code using python 3.8.3 but should function just fine on any other IDE. I recommend running from the command line using “python3 main.py” or “python main.py”. Also ensure that the tkinter and pillow libraries are installed. The window size is fixed and requires a minimum screen resolution of 720p. The program was developed in linux but has been tested and is working on windows.
+
 
 ## Getting Started
 
